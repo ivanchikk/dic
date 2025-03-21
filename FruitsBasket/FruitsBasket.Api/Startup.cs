@@ -24,6 +24,8 @@ public class Startup(IConfiguration configuration)
 
     public void Configure(IApplicationBuilder app)
     {
+        app.UseMiddleware<ExceptionHandlerMiddleware>();
+
         app.UseSwagger();
         app.UseSwaggerUI();
 
