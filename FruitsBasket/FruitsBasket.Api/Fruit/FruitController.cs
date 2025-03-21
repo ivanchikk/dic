@@ -11,7 +11,7 @@ namespace FruitsBasket.Api.Fruit;
 public class FruitController(IFruitOrchestrator orchestrator, IMapper mapper) : ControllerBase
 {
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var result = await orchestrator.GetByIdAsync(id);
 
@@ -19,7 +19,7 @@ public class FruitController(IFruitOrchestrator orchestrator, IMapper mapper) : 
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync(
+    public async Task<IActionResult> GetAll(
         [Range(1, 1_000_000_000)] int pageNumber = 1,
         [Range(1, 100)] int pageSize = 10)
     {
@@ -29,26 +29,26 @@ public class FruitController(IFruitOrchestrator orchestrator, IMapper mapper) : 
     }
 
     [HttpPost]
-    public async Task<IActionResult> PostAsync(CreateFruit fruit)
+    public async Task<IActionResult> Post(CreateFruit fruit)
     {
         var result = await orchestrator.CreateAsync(mapper.Map<FruitDto>(fruit));
 
-        return Ok(result);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> PutAsync(int id, CreateFruit fruit)
+    public async Task<IActionResult> Put(int id, CreateFruit fruit)
     {
         var entity = mapper.Map<FruitDto>(fruit);
         entity.Id = id;
 
         await orchestrator.UpdateAsync(entity);
 
-        return Ok();
+        return NoContent();
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteAsync(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         await orchestrator.DeleteAsync(id);
 
