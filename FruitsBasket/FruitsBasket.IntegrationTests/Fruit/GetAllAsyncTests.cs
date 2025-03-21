@@ -39,7 +39,7 @@ public class GetAllAsyncTests : TestBase
     [InlineData(-1, -1)]
     [InlineData(1, 101)]
     [InlineData(101, 102)]
-    public async Task GetAllAsync_ThrowsException_IfPageNumberOrPageSizeInvalid(int pageNumber, int pageSize)
+    public async Task GetAllAsync_ReturnsBadRequest_IfPageNumberOrPageSizeInvalid(int pageNumber, int pageSize)
     {
         // Arrange
 
