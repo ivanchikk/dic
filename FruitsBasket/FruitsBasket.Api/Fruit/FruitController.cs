@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using FruitsBasket.Api.Fruit.Contract;
 using FruitsBasket.Model.Fruit;
@@ -18,7 +19,9 @@ public class FruitController(IFruitOrchestrator orchestrator, IMapper mapper) : 
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync(int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> GetAllAsync(
+        [Range(1, 1_000_000_000)] int pageNumber = 1,
+        [Range(1, 100)] int pageSize = 10)
     {
         var result = await orchestrator.GetAllAsync(pageNumber, pageSize);
 
