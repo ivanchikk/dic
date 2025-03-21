@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using FruitsBasket.Model.Fruit;
+using FruitsBasket.Orchestrator.Exceptions;
 using FruitsBasket.Orchestrator.Fruit;
 using Moq;
 
@@ -49,7 +51,7 @@ public class FruitOrchestratorTests
         var act = async () => await _orchestrator.GetByIdAsync(id);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>()
+        await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Fruit not found");
     }
 
@@ -72,38 +74,6 @@ public class FruitOrchestratorTests
         _repositoryMock.Verify(rm => rm.GetAllAsync(pageNumber, pageSize), Times.Once);
 
         actual.Should().BeEquivalentTo(expected);
-    }
-
-    [Theory]
-    [InlineData(0, 0)]
-    [InlineData(0, -1)]
-    [InlineData(-1, 0)]
-    [InlineData(-1, -1)]
-    public async Task GetAllAsync_ThrowsException_IfPageNumberOrPageSizeInvalid(int pageNumber, int pageSize)
-    {
-        // Arrange
-
-        // Act
-        var act = async () => await _orchestrator.GetAllAsync(pageNumber, pageSize);
-
-        // Assert
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Page number and page size must be greater than 0");
-    }
-
-    [Theory]
-    [InlineData(1, 101)]
-    [InlineData(101, 102)]
-    public async Task GetAllAsync_ThrowsException_IfPageSizeTooBig(int pageNumber, int pageSize)
-    {
-        // Arrange
-
-        // Act
-        var act = async () => await _orchestrator.GetAllAsync(pageNumber, pageSize);
-
-        // Assert
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Page size must be less than 101");
     }
 
     [Fact]
@@ -166,7 +136,7 @@ public class FruitOrchestratorTests
         var act = async () => await _orchestrator.UpdateAsync(new FruitDto());
 
         // Assert
-        await act.Should().ThrowAsync<Exception>()
+        await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Fruit not found");
     }
 
@@ -196,7 +166,7 @@ public class FruitOrchestratorTests
         var act = async () => await _orchestrator.DeleteAsync(id);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>()
+        await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Fruit not found");
     }
 }
