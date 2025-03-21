@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using FruitsBasket.Model.Fruit;
 using FruitsBasket.Orchestrator.Exceptions;
