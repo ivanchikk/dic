@@ -1,35 +1,26 @@
-using FruitsBasket.Api.Fruit;
-using FruitsBasket.Data;
-using FruitsBasket.Data.Fruit;
-using FruitsBasket.Model.Fruit;
-using FruitsBasket.Orchestrator.Fruit;
-using Microsoft.EntityFrameworkCore;
+namespace FruitsBasket.Api;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton<SoftDeleteInterceptor>();
-builder.Services.AddScoped<IFruitRepository, FruitRepository>();
-builder.Services.AddScoped<IFruitOrchestrator, FruitOrchestrator>();
-builder.Services.AddAutoMapper(typeof(FruitProfile), typeof(FruitDaoProfile));
-builder.Services.AddDbContext<FruitDbContext>(
-    (sp, options) => options
-        .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-        .AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>())
-);
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+public class Program
 {
-    app.UseSwaggerUI();
-    app.UseSwagger();
+    public static void Main(string[] args)
+    {
+        try
+        {
+            CreateHostBuilder(args)
+                .Build()
+                .Run();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 }
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();
