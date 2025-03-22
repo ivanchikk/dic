@@ -14,7 +14,7 @@ public class CreateAsyncTests : TestBase
         var expected = new FruitDao
         {
             Id = id,
-            Name = $"Fruit",
+            Name = "Fruit",
             Weight = 10,
             HarvestDate = DateTime.UtcNow,
         };

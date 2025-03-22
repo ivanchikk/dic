@@ -15,7 +15,7 @@ public class DeleteAsyncTests : TestBase
         var fruit = new FruitDao
         {
             Id = id,
-            Name = $"Fruit",
+            Name = "Fruit",
             Weight = 10,
             HarvestDate = DateTime.UtcNow,
         };

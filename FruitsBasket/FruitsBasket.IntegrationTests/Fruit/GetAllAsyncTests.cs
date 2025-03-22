@@ -11,19 +11,20 @@ public class GetAllAsyncTests : TestBase
     {
         // Arrange
         const int expectedCount = 3;
-        var expected = Enumerable.Range(1, 3).Select(i => new FruitDao
-        {
-            Id = i,
-            Name = $"Fruit{i}",
-            Weight = 10 * i,
-            HarvestDate = DateTime.UtcNow.AddDays(-i),
-        }).ToList();
+        var expected = Enumerable.Range(1, expectedCount)
+            .Select(i => new FruitDao
+            {
+                Id = i,
+                Name = $"Fruit{i}",
+                Weight = 10 * i,
+                HarvestDate = DateTime.UtcNow.AddDays(-i),
+            }).ToList();
 
         DbContext.Fruits.AddRange(expected);
         await DbContext.SaveChangesAsync();
 
         // Act
-        var result = await HttpClient.GetAsync("Fruit");
+        var result = await HttpClient.GetAsync($"Fruit?pageNumber=1&pageSize={expectedCount}");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

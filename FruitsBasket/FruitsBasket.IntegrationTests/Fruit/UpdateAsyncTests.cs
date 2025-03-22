@@ -15,7 +15,7 @@ public class UpdateAsyncTests : TestBase
         var fruit = new FruitDao
         {
             Id = id,
-            Name = $"Fruit",
+            Name = "Fruit",
             Weight = 10,
             HarvestDate = DateTime.UtcNow,
         };
@@ -23,7 +23,7 @@ public class UpdateAsyncTests : TestBase
         var expected = new FruitDao
         {
             Id = id,
-            Name = $"NewFruit",
+            Name = "NewFruit",
             Weight = 20,
             HarvestDate = DateTime.UtcNow.AddDays(-1),
         };

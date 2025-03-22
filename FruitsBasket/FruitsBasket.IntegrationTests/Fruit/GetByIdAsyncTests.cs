@@ -14,7 +14,7 @@ public class GetByIdAsyncTests : TestBase
         var expected = new FruitDao
         {
             Id = id,
-            Name = $"Fruit",
+            Name = "Fruit",
             Weight = 10,
             HarvestDate = DateTime.UtcNow,
         };
