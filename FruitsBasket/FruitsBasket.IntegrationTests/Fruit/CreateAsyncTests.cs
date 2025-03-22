@@ -23,7 +23,7 @@ public class CreateAsyncTests : TestBase
         var result = await HttpClient.PostAsync("Fruit", JsonContent.Create(expected));
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var actual = await result.Content.ReadFromJsonAsync<FruitDao>();
         actual.Should().BeEquivalentTo(expected);

@@ -36,7 +36,7 @@ public class UpdateAsyncTests : TestBase
         var result = await HttpClient.PutAsync($"Fruit/{id}", JsonContent.Create(expected));
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var actual = await DbContext.Fruits.SingleOrDefaultAsync(f => f.Id == id);
         actual.Should().BeEquivalentTo(expected);
