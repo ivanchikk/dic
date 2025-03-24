@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="14.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FruitsBasket.Data\FruitsBasket.Data.csproj" />
+      <ProjectReference Include="..\FruitsBasket.Model\FruitsBasket.Model.csproj" />
+      <ProjectReference Include="..\FruitsBasket.Orchestrator\FruitsBasket.Orchestrator.csproj" />
+    </ItemGroup>
+
+</Project>
