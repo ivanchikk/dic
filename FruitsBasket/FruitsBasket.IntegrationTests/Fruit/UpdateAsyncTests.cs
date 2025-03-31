@@ -33,12 +33,12 @@ public class UpdateAsyncTests : TestBase
         DbContext.Fruits.Entry(fruit).State = EntityState.Detached;
 
         // Act
-        var result = await HttpClient.PutAsync($"Fruit/{id}", JsonContent.Create(expected));
+        var result = await HttpClient.PutAsync($"{API_PATH}/{id}", JsonContent.Create(expected));
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var actual = await DbContext.Fruits.SingleOrDefaultAsync(f => f.Id == id);
+        var actual = await result.Content.ReadFromJsonAsync<FruitDao>();
         actual.Should().BeEquivalentTo(expected);
     }
 }

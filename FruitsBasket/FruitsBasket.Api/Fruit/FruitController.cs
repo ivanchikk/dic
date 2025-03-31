@@ -8,10 +8,10 @@ namespace FruitsBasket.Api.Fruit;
 
 [ApiController]
 [Route("[controller]")]
-public class FruitController(IFruitOrchestrator orchestrator, IMapper mapper) : ControllerBase
+public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper) : ControllerBase
 {
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
         var result = await orchestrator.GetByIdAsync(id);
 
@@ -19,7 +19,7 @@ public class FruitController(IFruitOrchestrator orchestrator, IMapper mapper) : 
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(
+    public async Task<IActionResult> GetAllAsync(
         [Range(1, 1_000_000_000)] int pageNumber = 1,
         [Range(1, 100)] int pageSize = 10)
     {
@@ -29,29 +29,29 @@ public class FruitController(IFruitOrchestrator orchestrator, IMapper mapper) : 
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(CreateFruit fruit)
+    public async Task<IActionResult> PostAsync(CreateFruit fruit)
     {
         var result = await orchestrator.CreateAsync(mapper.Map<FruitDto>(fruit));
 
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Put(int id, CreateFruit fruit)
+    public async Task<IActionResult> PutAsync(int id, CreateFruit fruit)
     {
         var entity = mapper.Map<FruitDto>(fruit);
         entity.Id = id;
 
-        await orchestrator.UpdateAsync(entity);
+        var result = await orchestrator.UpdateAsync(entity);
 
-        return NoContent();
+        return Ok(result);
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
-        await orchestrator.DeleteAsync(id);
+        var result = await orchestrator.DeleteAsync(id);
 
-        return NoContent();
+        return Ok(result);
     }
 }

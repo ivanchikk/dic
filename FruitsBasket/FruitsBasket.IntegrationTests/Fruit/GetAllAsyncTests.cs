@@ -24,7 +24,7 @@ public class GetAllAsyncTests : TestBase
         await DbContext.SaveChangesAsync();
 
         // Act
-        var result = await HttpClient.GetAsync($"Fruit?pageNumber=1&pageSize={expectedCount}");
+        var result = await HttpClient.GetAsync($"{API_PATH}?pageNumber=1&pageSize={expectedCount}");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -45,7 +45,7 @@ public class GetAllAsyncTests : TestBase
         // Arrange
 
         // Act
-        var result = await HttpClient.GetAsync($"Fruit?pageNumber={pageNumber}&pageSize={pageSize}");
+        var result = await HttpClient.GetAsync($"{API_PATH}?pageNumber={pageNumber}&pageSize={pageSize}");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);

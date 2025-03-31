@@ -24,12 +24,15 @@ public class DeleteAsyncTests : TestBase
         DbContext.Fruits.Entry(fruit).State = EntityState.Detached;
 
         // Act
-        var result = await HttpClient.DeleteAsync($"Fruit/{id}");
+        var result = await HttpClient.DeleteAsync($"{API_PATH}/{id}");
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var actual = await DbContext.Fruits.SingleOrDefaultAsync(f => f.Id == id);
         actual.Should().BeNull();
+        
+        var actualFruit = await result.Content.ReadFromJsonAsync<FruitDao>();
+        actualFruit.Should().BeEquivalentTo(fruit);
     }
 }

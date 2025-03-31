@@ -11,7 +11,10 @@ public class Startup(IConfiguration configuration)
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers(options =>
+        {
+            options.SuppressAsyncSuffixInActionNames = false;
+        });
         services.AddSwaggerGen();
 
         services.AddSingleton<SoftDeleteInterceptor>();

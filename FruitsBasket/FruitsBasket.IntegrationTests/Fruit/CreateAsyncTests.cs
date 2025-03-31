@@ -20,7 +20,7 @@ public class CreateAsyncTests : TestBase
         };
 
         // Act
-        var result = await HttpClient.PostAsync("Fruit", JsonContent.Create(expected));
+        var result = await HttpClient.PostAsync(API_PATH, JsonContent.Create(expected));
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Created);

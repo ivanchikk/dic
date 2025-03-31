@@ -38,17 +38,23 @@ public class FruitRepository(FruitDbContext context, IMapper mapper) : IFruitRep
         return mapper.Map<FruitDto>(result.Entity);
     }
 
-    public async Task UpdateAsync(FruitDto fruit)
+    public async Task<FruitDto> UpdateAsync(FruitDto fruit)
     {
-        context.Fruits.Update(mapper.Map<FruitDao>(fruit));
+        var entity = mapper.Map<FruitDao>(fruit);
+        var result = context.Fruits.Update(entity);
 
         await context.SaveChangesAsync();
+
+        return mapper.Map<FruitDto>(result.Entity);
     }
 
-    public async Task DeleteAsync(FruitDto fruit)
+    public async Task<FruitDto> DeleteAsync(FruitDto fruit)
     {
-        context.Fruits.Remove(mapper.Map<FruitDao>(fruit));
+        var entity = mapper.Map<FruitDao>(fruit);
+        var result = context.Fruits.Remove(entity);
 
         await context.SaveChangesAsync();
+
+        return mapper.Map<FruitDto>(result.Entity);
     }
 }

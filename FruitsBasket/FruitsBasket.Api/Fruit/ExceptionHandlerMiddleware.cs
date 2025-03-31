@@ -20,7 +20,7 @@ public class ExceptionHandlerMiddleware(RequestDelegate next)
 
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        var code = HttpStatusCode.InternalServerError;
+        HttpStatusCode code;
         string result;
 
         switch (exception)
@@ -30,6 +30,7 @@ public class ExceptionHandlerMiddleware(RequestDelegate next)
                 result = JsonSerializer.Serialize(new { error = notFoundException.Message });
                 break;
             default:
+                code = HttpStatusCode.InternalServerError;
                 result = JsonSerializer.Serialize(new { error = exception.Message });
                 break;
         }

@@ -11,6 +11,7 @@ public class FruitDao : ISoftDeletable
     public int Id { get; set; }
 
     [Column("name")]
+    [MaxLength(32)]
     public string Name { get; set; } = null!;
 
     [Column("weight")]

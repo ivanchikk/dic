@@ -23,7 +23,7 @@ public class GetByIdAsyncTests : TestBase
         await DbContext.SaveChangesAsync();
 
         // Act
-        var result = await HttpClient.GetAsync($"Fruit/{id}");
+        var result = await HttpClient.GetAsync($"{API_PATH}/{id}");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

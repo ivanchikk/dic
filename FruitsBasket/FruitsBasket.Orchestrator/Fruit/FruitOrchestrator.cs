@@ -10,7 +10,7 @@ public class FruitOrchestrator(IFruitRepository repository) : IFruitOrchestrator
         return await repository.GetByIdAsync(id) ?? throw new NotFoundException("Fruit not found");
     }
 
-    public async Task<List<FruitDto>> GetAllAsync(int pageNumber = 1, int pageSize = 10)
+    public async Task<List<FruitDto>> GetAllAsync(int pageNumber, int pageSize)
     {
         return await repository.GetAllAsync(pageNumber, pageSize);
     }
@@ -20,18 +20,24 @@ public class FruitOrchestrator(IFruitRepository repository) : IFruitOrchestrator
         return await repository.CreateAsync(fruit);
     }
 
-    public async Task UpdateAsync(FruitDto fruit)
+    public async Task<FruitDto> UpdateAsync(FruitDto fruit)
     {
-        if (await repository.GetByIdAsync(fruit.Id) is null)
+        var entity = await repository.GetByIdAsync(fruit.Id);
+
+        if (entity is null)
             throw new NotFoundException("Fruit not found");
 
-        await repository.UpdateAsync(fruit);
+        entity.Name = fruit.Name;
+        entity.Weight = fruit.Weight;
+        entity.HarvestDate = fruit.HarvestDate;
+
+        return await repository.UpdateAsync(entity);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task<FruitDto> DeleteAsync(int id)
     {
         var fruit = await repository.GetByIdAsync(id) ?? throw new NotFoundException("Fruit not found");
 
-        await repository.DeleteAsync(fruit);
+        return await repository.DeleteAsync(fruit);
     }
 }
