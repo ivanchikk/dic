@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using FruitsBasket.Api.Fruit;
 using FruitsBasket.Data;
 using FruitsBasket.Data.Fruit;
@@ -14,6 +15,24 @@ public class Startup(IConfiguration configuration)
         services.AddControllers(options =>
         {
             options.SuppressAsyncSuffixInActionNames = false;
+        });
+        services.AddApiVersioning(options =>
+        {
+            options.DefaultApiVersion = new ApiVersion(1);
+            options.ReportApiVersions = true;
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.ApiVersionReader = ApiVersionReader.Combine(
+                new UrlSegmentApiVersionReader(),
+                new QueryStringApiVersionReader(),
+                new HeaderApiVersionReader(),
+                new MediaTypeApiVersionReader()
+            );
+        })
+        .AddMvc()
+        .AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'V";
+            options.SubstituteApiVersionInUrl = true;
         });
         services.AddSwaggerGen();
 

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Asp.Versioning;
 using AutoMapper;
 using FruitsBasket.Api.Fruit.Contract;
 using FruitsBasket.Model.Fruit;
@@ -7,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace FruitsBasket.Api.Fruit;
 
 [ApiController]
-[Route("[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper) : ControllerBase
 {
     [HttpGet("{id:int}")]
