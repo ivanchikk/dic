@@ -60,14 +60,14 @@ public class FruitOrchestratorTests
         // Arrange
         const int pageNumber = 1;
         const int pageSize = 10;
-        var expected = new List<FruitDto> { new FruitDto(), new FruitDto() };
+        var expected = new List<FruitDto> { new(), new() };
 
         _repositoryMock
             .Setup(rm => rm.GetAllAsync(pageNumber, pageSize))
             .ReturnsAsync(expected);
 
         // Act
-        var actual = await _orchestrator.GetAllAsync();
+        var actual = await _orchestrator.GetAllAsync(1, 10);
 
         // Assert
         _repositoryMock.Verify(rm => rm.GetAllAsync(pageNumber, pageSize), Times.Once);

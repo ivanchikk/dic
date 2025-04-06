@@ -1,4 +1,4 @@
-namespace FruitsBasket.Model.Fruit;
+namespace FruitsBasket.Model;
 
 public interface ISoftDeletable
 {

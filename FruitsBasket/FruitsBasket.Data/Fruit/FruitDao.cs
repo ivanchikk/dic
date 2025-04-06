@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using FruitsBasket.Model.Fruit;
+using FruitsBasket.Model;
 
 namespace FruitsBasket.Data.Fruit;
 
