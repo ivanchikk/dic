@@ -36,8 +36,8 @@ public class FruitOrchestrator(IFruitRepository repository) : IFruitOrchestrator
 
     public async Task<FruitDto> DeleteAsync(int id)
     {
-        var fruit = await repository.GetByIdAsync(id) ?? throw new NotFoundException("Fruit not found");
+        var entity = await repository.GetByIdAsync(id) ?? throw new NotFoundException("Fruit not found");
 
-        return await repository.DeleteAsync(fruit);
+        return await repository.DeleteAsync(entity);
     }
 }
