@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FruitsBasket.Data.Fruit;
 
-public class FruitRepository(FruitDbContext context, IMapper mapper) : IFruitRepository
+public class FruitRepository(SqlDbContext context, IMapper mapper) : IFruitRepository
 {
     public async Task<FruitDto?> GetByIdAsync(int id)
     {

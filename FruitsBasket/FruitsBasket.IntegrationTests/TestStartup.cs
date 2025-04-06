@@ -10,7 +10,7 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
 {
     protected override void ConfigureDb(IServiceCollection services)
     {
-        var context = ConfigureDb<FruitDbContext>().MockedDbContext;
+        var context = ConfigureDb<SqlDbContext>().MockedDbContext;
         services.AddSingleton(context);
     }
 
@@ -18,7 +18,7 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
     {
         var options = new DbContextOptionsBuilder<T>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
-        var context = (T)Activator.CreateInstance(typeof(FruitDbContext), options)!;
+        var context = (T)Activator.CreateInstance(typeof(SqlDbContext), options)!;
 
         return new MockedDbContextBuilder<T>()
             .UseDbContext(context)

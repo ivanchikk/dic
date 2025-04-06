@@ -57,7 +57,7 @@ public class Startup(IConfiguration configuration)
 
     protected virtual void ConfigureDb(IServiceCollection services)
     {
-        services.AddDbContext<FruitDbContext>(
+        services.AddDbContext<SqlDbContext>(
             (sp, options) => options
                 .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
                 .AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>())

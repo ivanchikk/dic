@@ -7,7 +7,7 @@ public class TestBase : IDisposable
 {
     private IHostBuilder _server = null!;
     private IHost _host = null!;
-    protected FruitDbContext DbContext = null!;
+    protected SqlDbContext DbContext = null!;
     protected readonly HttpClient HttpClient;
     protected const string API_PATH = "api/v1/fruits";
 
@@ -27,7 +27,7 @@ public class TestBase : IDisposable
     {
         _host = _server.Start();
 
-        DbContext = _host.Services.GetRequiredService<FruitDbContext>();
+        DbContext = _host.Services.GetRequiredService<SqlDbContext>();
         return _host.GetTestClient();
     }
 
