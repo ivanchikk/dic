@@ -16,9 +16,9 @@ public class FruitRepository(SqlDbContext context, IMapper mapper) : IFruitRepos
         return mapper.Map<FruitDto>(result);
     }
 
-    public Task<List<FruitDto>> GetAllAsync(int pageNumber, int pageSize)
+    public async Task<List<FruitDto>> GetAllAsync(int pageNumber, int pageSize)
     {
-        var result = context.Fruits
+        var result = await context.Fruits
             .AsNoTracking()
             .OrderBy(f => f.Id)
             .Skip((pageNumber - 1) * pageSize)
