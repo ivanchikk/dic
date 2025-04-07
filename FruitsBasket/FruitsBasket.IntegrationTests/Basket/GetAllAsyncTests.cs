@@ -1,10 +1,10 @@
 using System.Net;
 using FluentAssertions;
-using FruitsBasket.Data.Fruit;
+using FruitsBasket.Data.Basket;
 
-namespace FruitsBasket.IntegrationTests.Fruit;
+namespace FruitsBasket.IntegrationTests.Basket;
 
-public class GetAllAsyncTests : TestBaseFruit
+public class GetAllAsyncTests : TestBaseBasket
 {
     [Fact]
     public async Task GetAllAsync_ReturnEntities_IfExist()
@@ -12,16 +12,16 @@ public class GetAllAsyncTests : TestBaseFruit
         // Arrange
         const int expectedCount = 3;
         var expected = Enumerable.Range(1, expectedCount)
-            .Select(i => new FruitDao
+            .Select(i => new BasketDao
             {
-                Id = i,
-                Name = $"Fruit{i}",
-                Weight = 10 * i,
-                HarvestDate = DateTime.UtcNow.AddDays(-i),
+                Id = Guid.NewGuid(),
+                Name = $"Basket{i}",
+                FruitsWeight = 10 * i,
+                LastFruitAdded = DateTime.UtcNow.AddDays(-i),
             }).ToList();
 
-        SqlDbContext.Fruits.AddRange(expected);
-        await SqlDbContext.SaveChangesAsync();
+        CosmosDbContext.Baskets.AddRange(expected);
+        await CosmosDbContext.SaveChangesAsync();
 
         // Act
         var result = await HttpClient.GetAsync($"{RESOURCE_PATH}?pageNumber=1&pageSize={expectedCount}");
@@ -29,7 +29,7 @@ public class GetAllAsyncTests : TestBaseFruit
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var actual = await result.Content.ReadFromJsonAsync<IEnumerable<FruitDao>>();
+        var actual = await result.Content.ReadFromJsonAsync<IEnumerable<BasketDao>>();
         actual.Should().BeEquivalentTo(expected);
     }
 

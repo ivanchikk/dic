@@ -4,7 +4,7 @@ using FruitsBasket.Data.Fruit;
 
 namespace FruitsBasket.IntegrationTests.Fruit;
 
-public class CreateAsyncTests : TestBase
+public class CreateAsyncTests : TestBaseFruit
 {
     [Fact]
     public async Task CreateAsync_CreatesEntity_IfDoesNotExist()
@@ -20,7 +20,7 @@ public class CreateAsyncTests : TestBase
         };
 
         // Act
-        var result = await HttpClient.PostAsync(API_PATH, JsonContent.Create(expected));
+        var result = await HttpClient.PostAsync(RESOURCE_PATH, JsonContent.Create(expected));
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Created);
