@@ -1,8 +1,11 @@
 using Asp.Versioning;
 using FruitsBasket.Api.Fruit;
 using FruitsBasket.Data;
+using FruitsBasket.Data.Basket;
 using FruitsBasket.Data.Fruit;
+using FruitsBasket.Model.Basket;
 using FruitsBasket.Model.Fruit;
+using FruitsBasket.Orchestrator.Basket;
 using FruitsBasket.Orchestrator.Fruit;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +42,8 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<SoftDeleteInterceptor>();
         services.AddScoped<IFruitRepository, FruitRepository>();
         services.AddScoped<IFruitOrchestrator, FruitOrchestrator>();
+        services.AddScoped<IBasketRepository, BasketRepository>();
+        services.AddScoped<IBasketOrchestrator, BasketOrchestrator>();
 
         services.AddAutoMapper(typeof(FruitProfile), typeof(FruitDaoProfile));
         ConfigureDb(services);
@@ -61,6 +66,10 @@ public class Startup(IConfiguration configuration)
             (sp, options) => options
                 .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
                 .AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>())
+        );
+        services.AddDbContext<CosmosDbContext>(
+            options => options
+                .UseCosmos(configuration.GetConnectionString("CosmosConnection")!, "baskets")
         );
     }
 }
