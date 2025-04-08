@@ -68,8 +68,9 @@ public class Startup(IConfiguration configuration)
                 .AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>())
         );
         services.AddDbContext<CosmosDbContext>(
-            options => options
+            (sp, options) => options
                 .UseCosmos(configuration.GetConnectionString("CosmosConnection")!, "baskets")
+                .AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>())
         );
     }
 }
