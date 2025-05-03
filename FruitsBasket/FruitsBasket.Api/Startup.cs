@@ -5,6 +5,7 @@ using FruitsBasket.Data.Fruit;
 using FruitsBasket.Model.Fruit;
 using FruitsBasket.Orchestrator.Fruit;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace FruitsBasket.Api;
 
@@ -50,6 +51,7 @@ public class Startup(IConfiguration configuration)
 
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseSerilogRequestLogging();
 
         app.UseRouting();
         app.UseEndpoints(endpoints => endpoints.MapControllers());

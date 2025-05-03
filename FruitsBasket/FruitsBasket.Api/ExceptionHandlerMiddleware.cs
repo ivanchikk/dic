@@ -4,7 +4,7 @@ using FruitsBasket.Orchestrator.Exceptions;
 
 namespace FruitsBasket.Api;
 
-public class ExceptionHandlerMiddleware(RequestDelegate next)
+public class ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
 {
     public async Task Invoke(HttpContext context)
     {
@@ -14,6 +14,7 @@ public class ExceptionHandlerMiddleware(RequestDelegate next)
         }
         catch (Exception exception)
         {
+            logger.LogError(exception, "Exception message: {ExceptionMessage}", exception.Message);
             await HandleExceptionAsync(context, exception);
         }
     }
