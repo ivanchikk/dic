@@ -57,4 +57,9 @@ public class FruitRepository(SqlDbContext context, IMapper mapper) : IFruitRepos
 
         return mapper.Map<FruitDto>(result.Entity);
     }
+
+    public async Task<int> CountAsync()
+    {
+        return await context.Fruits.CountAsync(f => !f.IsDeleted);
+    }
 }

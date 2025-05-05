@@ -2,7 +2,7 @@ using System.Net;
 using System.Text.Json;
 using FruitsBasket.Orchestrator.Exceptions;
 
-namespace FruitsBasket.Api;
+namespace FruitsBasket.Api.Middleware;
 
 public class ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
 {
