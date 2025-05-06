@@ -18,7 +18,7 @@ public static class FruitMetrics
         "HTTP request execution time in seconds",
         new HistogramConfiguration
         {
-            LabelNames = ["method", "endpoint"],
+            LabelNames = ["method", "endpoint", "status_code"],
             Buckets = Histogram.ExponentialBuckets(0.01, 2, 10)
         }
     );
