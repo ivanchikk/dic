@@ -53,13 +53,13 @@ public class Startup(IConfiguration configuration)
     public void Configure(IApplicationBuilder app)
     {
         app.UseMiddleware<ExceptionHandlerMiddleware>();
-        app.UseMiddleware<MetricsMiddleware>();
 
         app.UseSwagger();
         app.UseSwaggerUI();
         app.UseSerilogRequestLogging();
 
         app.UseRouting();
+        app.UseHttpMetrics();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

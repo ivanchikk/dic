@@ -17,8 +17,6 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetByIdAsync(int id)
     {
-        FruitMetrics.FruitOperationsTotal.WithLabels("get_by_id").Inc();
-
         var result = await orchestrator.GetByIdAsync(id);
 
         logger.LogInformation(nameof(GetByIdAsync) + ": success!");
@@ -31,8 +29,6 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
         [Range(1, 1_000_000_000)] int pageNumber = 1,
         [Range(1, 100)] int pageSize = 10)
     {
-        FruitMetrics.FruitOperationsTotal.WithLabels("get_all").Inc();
-
         var result = await orchestrator.GetAllAsync(pageNumber, pageSize);
 
         logger.LogInformation(nameof(GetAllAsync) + ": success!");
@@ -43,8 +39,6 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
     [HttpPost]
     public async Task<IActionResult> PostAsync(CreateFruit fruit)
     {
-        FruitMetrics.FruitOperationsTotal.WithLabels("post").Inc();
-
         var result = await orchestrator.CreateAsync(mapper.Map<FruitDto>(fruit));
 
         FruitMetrics.ActiveFruitsTotal.Inc();
@@ -56,8 +50,6 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
     [HttpPut("{id:int}")]
     public async Task<IActionResult> PutAsync(int id, CreateFruit fruit)
     {
-        FruitMetrics.FruitOperationsTotal.WithLabels("put").Inc();
-
         var entity = mapper.Map<FruitDto>(fruit);
         entity.Id = id;
 
@@ -71,8 +63,6 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteAsync(int id)
     {
-        FruitMetrics.FruitOperationsTotal.WithLabels("delete").Inc();
-
         var result = await orchestrator.DeleteAsync(id);
 
         FruitMetrics.ActiveFruitsTotal.Dec();

@@ -4,7 +4,7 @@ namespace FruitsBasket.Api.Fruit.Metrics;
 
 public class FruitMetricsUpdater(IServiceProvider serviceProvider) : BackgroundService
 {
-    private readonly TimeSpan _updateInterval = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan _updateInterval = TimeSpan.FromMinutes(1);
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {

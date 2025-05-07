@@ -109,9 +109,9 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(fruitsbasket_api_requests_total[1m])",
+          "expr": "label_replace(\r\n    rate(http_requests_received_total[5m]),\r\n    \"endpoint\",\r\n    \"$1\",\r\n    \"endpoint\",\r\n    \"api/v\\\\{version:apiVersion\\\\}/(.*)\"\r\n)",
           "instant": false,
-          "legendFormat": "{{method}} {{endpoint}} - {{status_code}}",
+          "legendFormat": "{{method}} {{endpoint}} - {{code}}",
           "range": true,
           "refId": "A"
         }
@@ -200,10 +200,10 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by(le, method, endpoint) (rate(fruitsbasket_request_duration_seconds_bucket[5m])))",
+          "expr": "histogram_quantile(0.95, sum by(le, method, endpoint) (\r\n  label_replace(\r\n    rate(http_request_duration_seconds_bucket[5m]),\r\n    \"endpoint\",\r\n    \"$1\",\r\n    \"endpoint\",\r\n    \"api/v\\\\{version:apiVersion\\\\}/(.*)\"\r\n  )\r\n))",
           "fullMetaSearch": false,
           "includeNullMetadata": false,
-          "legendFormat": "{{method}} {{endpoint}} - {{status_code}}",
+          "legendFormat": "{{method}} {{endpoint}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -353,10 +353,11 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum by(operation) (fruitsbasket_fruit_operations_total)",
+          "expr": "label_replace(\r\n    http_request_duration_seconds_count,\r\n    \"endpoint\",\r\n    \"$1\",\r\n    \"endpoint\",\r\n    \"api/v\\\\{version:apiVersion\\\\}/(.*)\"\r\n)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "legendFormat": "{{operation}}",
+          "interval": "60",
+          "legendFormat": "{{method}} {{endpoint}} - {{code}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -381,5 +382,5 @@
   "timezone": "",
   "title": "FruitsBasket API Dashboard",
   "uid": "fruitsbasket",
-  "version": 1
+  "version": 9
 }
