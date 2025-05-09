@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FruitsBasket.IntegrationTests.Fruit;
 
-public class DeleteAsyncTests : TestBase
+public class DeleteAsyncTests : TestBaseFruit
 {
     [Fact]
-    public async Task CreateAsync_CreatesEntity_IfDoesNotExist()
+    public async Task DeleteAsync_DeletesEntity_IfExist()
     {
         // Arrange
         const int id = 1;
@@ -19,19 +19,19 @@ public class DeleteAsyncTests : TestBase
             Weight = 10,
             HarvestDate = DateTime.UtcNow,
         };
-        DbContext.Fruits.Add(fruit);
-        await DbContext.SaveChangesAsync();
-        DbContext.Fruits.Entry(fruit).State = EntityState.Detached;
+        SqlDbContext.Fruits.Add(fruit);
+        await SqlDbContext.SaveChangesAsync();
+        SqlDbContext.Fruits.Entry(fruit).State = EntityState.Detached;
 
         // Act
-        var result = await HttpClient.DeleteAsync($"{API_PATH}/{id}");
+        var result = await HttpClient.DeleteAsync($"{RESOURCE_PATH}/{id}");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var actual = await DbContext.Fruits.SingleOrDefaultAsync(f => f.Id == id);
+        var actual = await SqlDbContext.Fruits.SingleOrDefaultAsync(f => f.Id == id);
         actual.Should().BeNull();
-        
+
         var actualFruit = await result.Content.ReadFromJsonAsync<FruitDao>();
         actualFruit.Should().BeEquivalentTo(fruit);
     }

@@ -4,7 +4,7 @@ using FruitsBasket.Data.Fruit;
 
 namespace FruitsBasket.IntegrationTests.Fruit;
 
-public class GetByIdAsyncTests : TestBase
+public class GetByIdAsyncTests : TestBaseFruit
 {
     [Fact]
     public async Task GetByIdAsync_ReturnsEntity_IfExists()
@@ -19,11 +19,11 @@ public class GetByIdAsyncTests : TestBase
             HarvestDate = DateTime.UtcNow,
         };
 
-        DbContext.Fruits.Add(expected);
-        await DbContext.SaveChangesAsync();
+        SqlDbContext.Fruits.Add(expected);
+        await SqlDbContext.SaveChangesAsync();
 
         // Act
-        var result = await HttpClient.GetAsync($"{API_PATH}/{id}");
+        var result = await HttpClient.GetAsync($"{RESOURCE_PATH}/{id}");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

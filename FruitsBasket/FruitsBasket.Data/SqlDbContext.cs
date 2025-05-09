@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FruitsBasket.Data;
 
-public class FruitDbContext(DbContextOptions<FruitDbContext> options) : DbContext(options)
+public class SqlDbContext(DbContextOptions<SqlDbContext> options) : DbContext(options)
 {
     public DbSet<FruitDao> Fruits { get; set; }
 

@@ -1,4 +1,4 @@
-using FruitsBasket.Model.Fruit;
+using FruitsBasket.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

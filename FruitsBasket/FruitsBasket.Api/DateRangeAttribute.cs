@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FruitsBasket.Api.Fruit.Contract;
+namespace FruitsBasket.Api;
 
 public class DateRangeAttribute : ValidationAttribute
 {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FruitsBasket.Data.Fruit;
 
-public class FruitRepository(FruitDbContext context, IMapper mapper) : IFruitRepository
+public class FruitRepository(SqlDbContext context, IMapper mapper) : IFruitRepository
 {
     public async Task<FruitDto?> GetByIdAsync(int id)
     {
@@ -16,9 +16,9 @@ public class FruitRepository(FruitDbContext context, IMapper mapper) : IFruitRep
         return mapper.Map<FruitDto>(result);
     }
 
-    public Task<List<FruitDto>> GetAllAsync(int pageNumber, int pageSize)
+    public async Task<List<FruitDto>> GetAllAsync(int pageNumber, int pageSize)
     {
-        var result = context.Fruits
+        var result = await context.Fruits
             .AsNoTracking()
             .OrderBy(f => f.Id)
             .Skip((pageNumber - 1) * pageSize)
