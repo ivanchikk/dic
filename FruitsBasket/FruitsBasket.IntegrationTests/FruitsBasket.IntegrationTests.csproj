@@ -27,4 +27,8 @@
       <ProjectReference Include="..\FruitsBasket.Api\FruitsBasket.Api.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="FruitBasket\" />
+    </ItemGroup>
+
 </Project>

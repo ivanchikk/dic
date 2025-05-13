@@ -21,7 +21,7 @@ public class BasketOrchestratorTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var expected = new BasketDto()
+        var expected = new BasketDto
         {
             Id = id,
             Name = "Basket",
@@ -38,6 +38,8 @@ public class BasketOrchestratorTests
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
     }
 
     [Fact]
@@ -46,12 +48,18 @@ public class BasketOrchestratorTests
         // Arrange
         var id = Guid.NewGuid();
 
+        _repositoryMock
+            .Setup(rm => rm.GetByIdAsync(id))
+            .ThrowsAsync(new NotFoundException("Basket not found"));
+
         // Act
         var act = async () => await _orchestrator.GetByIdAsync(id);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Basket not found");
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
     }
 
     [Fact]
@@ -67,12 +75,12 @@ public class BasketOrchestratorTests
             .ReturnsAsync(expected);
 
         // Act
-        var actual = await _orchestrator.GetAllAsync(1, 10);
+        var actual = await _orchestrator.GetAllAsync(pageNumber, pageSize);
 
         // Assert
-        _repositoryMock.Verify(rm => rm.GetAllAsync(pageNumber, pageSize), Times.Once);
-
         actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.GetAllAsync(pageNumber, pageSize), Times.Once);
     }
 
     [Fact]
@@ -80,7 +88,7 @@ public class BasketOrchestratorTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var expected = new BasketDto()
+        var expected = new BasketDto
         {
             Id = id,
             Name = "Basket",
@@ -97,6 +105,8 @@ public class BasketOrchestratorTests
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.CreateAsync(expected), Times.Once);
     }
 
     [Fact]
@@ -104,39 +114,57 @@ public class BasketOrchestratorTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var basket = new BasketDto()
+        var expected = new BasketDto
         {
             Id = id,
-            Name = "Fruit",
+            Name = "Basket",
             FruitsWeight = 1.1m,
             LastFruitAdded = new DateTime(2025, 01, 01),
         };
 
         _repositoryMock
             .Setup(rm => rm.GetByIdAsync(id))
-            .ReturnsAsync(basket);
+            .ReturnsAsync(expected);
+        _repositoryMock
+            .Setup(rm => rm.UpdateAsync(expected))
+            .ReturnsAsync(expected);
 
         // Act
-        await _orchestrator.UpdateAsync(basket);
+        var actual = await _orchestrator.UpdateAsync(expected);
 
         // Assert
-        _repositoryMock.Verify(rm => rm.UpdateAsync(basket), Times.Once);
+        actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
+        _repositoryMock.Verify(rm => rm.UpdateAsync(expected), Times.Once);
     }
 
     [Fact]
     public async Task UpdateAsync_ThrowsException_IfNotFound()
     {
         // Arrange
+        var id = Guid.NewGuid();
+        var basket = new BasketDto
+        {
+            Id = id,
+            Name = "Basket",
+            FruitsWeight = 1.1m,
+            LastFruitAdded = new DateTime(2025, 01, 01),
+        };
+
         _repositoryMock
-            .Setup(rm => rm.GetByIdAsync(It.IsAny<Guid>()))
+            .Setup(rm => rm.GetByIdAsync(id))
             .ReturnsAsync(() => null);
 
         // Act
-        var act = async () => await _orchestrator.UpdateAsync(new BasketDto());
+        var act = async () => await _orchestrator.UpdateAsync(basket);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Basket not found");
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
+        _repositoryMock.Verify(rm => rm.UpdateAsync(basket), Times.Never);
     }
 
     [Fact]
@@ -144,15 +172,29 @@ public class BasketOrchestratorTests
     {
         // Arrange
         var id = Guid.NewGuid();
+        var expected = new BasketDto
+        {
+            Id = id,
+            Name = "Basket",
+            FruitsWeight = 1.1m,
+            LastFruitAdded = new DateTime(2025, 01, 01),
+        };
+
         _repositoryMock
             .Setup(rm => rm.GetByIdAsync(id))
-            .ReturnsAsync(new BasketDto());
+            .ReturnsAsync(expected);
+        _repositoryMock
+            .Setup(rm => rm.DeleteAsync(expected))
+            .ReturnsAsync(expected);
 
         // Act
-        await _orchestrator.DeleteAsync(id);
+        var actual = await _orchestrator.DeleteAsync(id);
 
         // Assert
-        _repositoryMock.Verify(rm => rm.DeleteAsync(It.IsAny<BasketDto>()), Times.Once);
+        actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
+        _repositoryMock.Verify(rm => rm.DeleteAsync(expected), Times.Once);
     }
 
     [Fact]
@@ -161,11 +203,18 @@ public class BasketOrchestratorTests
         // Arrange
         var id = Guid.NewGuid();
 
+        _repositoryMock
+            .Setup(rm => rm.GetByIdAsync(id))
+            .ReturnsAsync(() => null);
+
         // Act
         var act = async () => await _orchestrator.DeleteAsync(id);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Basket not found");
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
+        _repositoryMock.Verify(rm => rm.DeleteAsync(It.IsAny<BasketDto>()), Times.Never);
     }
 }
