@@ -61,7 +61,7 @@ public class BlobStorage(BlobConfiguration configuration) : IBlobStorage
     {
         await _containerClient
             .GetBlobClient(fileName)
-            .UploadAsync(new MemoryStream());
+            .UploadAsync(Stream.Null);
     }
 
     public async Task<bool> ContainsFileAsync(string fileName)
