@@ -6,16 +6,22 @@ namespace FruitsBasket.Orchestrator.BlobStorage;
 
 public class BlobStorage(BlobConfiguration configuration) : IBlobStorage
 {
-    private readonly BlobServiceClient _blobServiceClient = new(configuration.ConnectionString);
+    private readonly BlobContainerClient _containerClient =
+        new(configuration.ConnectionString, configuration.ContainerName);
+
+    private static (Guid basketId, int fruitId) ParseFilename(string filename)
+    {
+        var parts = filename.Split('_');
+        return (Guid.ParseExact(parts[0], "N"), int.Parse(parts[1]));
+    }
 
     public async Task<List<Guid>> GetAllBasketsAsync()
     {
-        var containerClient = _blobServiceClient.GetBlobContainerClient(configuration.ContainerName);
         var result = new HashSet<Guid>();
 
-        await foreach (var blob in containerClient.GetBlobsAsync())
+        await foreach (var blob in _containerClient.GetBlobsAsync())
         {
-            result.Add(Guid.Parse(blob.Name.Split('_')[0]));
+            result.Add(ParseFilename(blob.Name).basketId);
         }
 
         return result.ToList();
@@ -23,12 +29,11 @@ public class BlobStorage(BlobConfiguration configuration) : IBlobStorage
 
     public async Task<List<int>> GetAllFruitsAsync()
     {
-        var containerClient = _blobServiceClient.GetBlobContainerClient(configuration.ContainerName);
         var result = new HashSet<int>();
 
-        await foreach (var blob in containerClient.GetBlobsAsync())
+        await foreach (var blob in _containerClient.GetBlobsAsync())
         {
-            result.Add(int.Parse(blob.Name.Split('_')[1]));
+            result.Add(ParseFilename(blob.Name).fruitId);
         }
 
         return result.ToList();
@@ -36,14 +41,13 @@ public class BlobStorage(BlobConfiguration configuration) : IBlobStorage
 
     public async Task<List<int>> GetAllFruitsByBasketIdAsync(Guid basketId)
     {
-        var containerClient = _blobServiceClient.GetBlobContainerClient(configuration.ContainerName);
         var result = new List<int>();
 
-        await foreach (var blob in containerClient.GetBlobsAsync())
+        await foreach (var blob in _containerClient.GetBlobsAsync())
         {
             if (blob.Name.StartsWith($"{basketId:N}"))
             {
-                result.Add(int.Parse(blob.Name.Split('_')[1]));
+                result.Add(ParseFilename(blob.Name).fruitId);
             }
         }
 
@@ -55,31 +59,28 @@ public class BlobStorage(BlobConfiguration configuration) : IBlobStorage
 
     public async Task CreateFileAsync(string fileName)
     {
-        await _blobServiceClient
-            .GetBlobContainerClient(configuration.ContainerName)
+        await _containerClient
             .GetBlobClient(fileName)
             .UploadAsync(new MemoryStream());
     }
 
     public async Task<bool> ContainsFileAsync(string fileName)
     {
-        return await _blobServiceClient
-            .GetBlobContainerClient(configuration.ContainerName)
+        return await _containerClient
             .GetBlobClient(fileName)
             .ExistsAsync();
     }
 
     public async Task<FruitBasketDto> DeleteFileAsync(string fileName)
     {
-        await _blobServiceClient
-            .GetBlobContainerClient(configuration.ContainerName)
+        await _containerClient
             .GetBlobClient(fileName)
             .DeleteAsync();
 
         return new FruitBasketDto
         {
-            BasketId = Guid.ParseExact(fileName.Split('_')[0], "N"),
-            FruitId = int.Parse(fileName.Split('_')[1])
+            BasketId = ParseFilename(fileName).basketId,
+            FruitId = ParseFilename(fileName).fruitId,
         };
     }
 }
