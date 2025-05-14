@@ -1,6 +1,7 @@
 using System.Net;
 using FluentAssertions;
 using FruitsBasket.Data.Fruit;
+using FruitsBasket.Model.Fruit;
 using Microsoft.EntityFrameworkCore;
 
 namespace FruitsBasket.IntegrationTests.Fruit;
@@ -19,7 +20,8 @@ public class DeleteAsyncTests : TestBaseFruit
             Weight = 10,
             HarvestDate = DateTime.UtcNow,
         };
-        SqlDbContext.Fruits.Add(fruit);
+        
+        await SqlDbContext.Fruits.AddAsync(fruit);
         await SqlDbContext.SaveChangesAsync();
         SqlDbContext.Fruits.Entry(fruit).State = EntityState.Detached;
 
@@ -32,7 +34,7 @@ public class DeleteAsyncTests : TestBaseFruit
         var actual = await SqlDbContext.Fruits.SingleOrDefaultAsync(f => f.Id == id);
         actual.Should().BeNull();
 
-        var actualFruit = await result.Content.ReadFromJsonAsync<FruitDao>();
-        actualFruit.Should().BeEquivalentTo(fruit);
+        var actualFruit = await result.Content.ReadFromJsonAsync<FruitDto>();
+        actualFruit.Should().BeEquivalentTo(fruit, opt => opt.ExcludingMissingMembers());
     }
 }
