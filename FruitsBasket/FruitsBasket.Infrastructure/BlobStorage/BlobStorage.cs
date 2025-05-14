@@ -1,8 +1,7 @@
 using Azure.Storage.Blobs;
 using FruitsBasket.Model.FruitBasket;
-using FruitsBasket.Orchestrator.Exceptions;
 
-namespace FruitsBasket.Orchestrator.BlobStorage;
+namespace FruitsBasket.Infrastructure.BlobStorage;
 
 public class BlobStorage(BlobConfiguration configuration) : IBlobStorage
 {
@@ -50,9 +49,6 @@ public class BlobStorage(BlobConfiguration configuration) : IBlobStorage
                 result.Add(ParseFilename(blob.Name).fruitId);
             }
         }
-
-        if (result.Count == 0)
-            throw new NotFoundException("Basket not found");
 
         return result;
     }

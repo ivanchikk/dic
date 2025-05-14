@@ -1,6 +1,6 @@
 using FruitsBasket.Model.FruitBasket;
 
-namespace FruitsBasket.Orchestrator.BlobStorage;
+namespace FruitsBasket.Infrastructure.BlobStorage;
 
 public interface IBlobStorage
 {

@@ -1,7 +1,7 @@
+using FruitsBasket.Infrastructure.BlobStorage;
 using FruitsBasket.Model.Basket;
 using FruitsBasket.Model.Fruit;
 using FruitsBasket.Model.FruitBasket;
-using FruitsBasket.Orchestrator.BlobStorage;
 using FruitsBasket.Orchestrator.Exceptions;
 
 namespace FruitsBasket.Orchestrator.FruitBasket;
@@ -26,7 +26,12 @@ public class FruitBasketOrchestrator(
     {
         await basketOrchestrator.GetByIdAsync(basketId);
 
-        return await fruitBasketStorage.GetAllFruitsByBasketIdAsync(basketId);
+        var result = await fruitBasketStorage.GetAllFruitsByBasketIdAsync(basketId);
+
+        if (result.Count == 0)
+            throw new NotFoundException("Basket not found");
+
+        return result;
     }
 
     public async Task<FruitBasketDto> CreateAsync(Guid basketId, int fruitId)

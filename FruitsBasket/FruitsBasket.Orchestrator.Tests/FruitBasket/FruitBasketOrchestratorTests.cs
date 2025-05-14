@@ -1,8 +1,8 @@
 using FluentAssertions;
+using FruitsBasket.Infrastructure.BlobStorage;
 using FruitsBasket.Model.Basket;
 using FruitsBasket.Model.Fruit;
 using FruitsBasket.Model.FruitBasket;
-using FruitsBasket.Orchestrator.BlobStorage;
 using FruitsBasket.Orchestrator.Exceptions;
 using FruitsBasket.Orchestrator.FruitBasket;
 using Moq;

@@ -1,4 +1,4 @@
-namespace FruitsBasket.Orchestrator.BlobStorage;
+namespace FruitsBasket.Infrastructure.BlobStorage;
 
 public class BlobConfiguration
 {
