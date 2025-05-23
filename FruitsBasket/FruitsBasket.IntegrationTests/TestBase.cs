@@ -1,5 +1,6 @@
 using FruitsBasket.Data;
 using Microsoft.AspNetCore.TestHost;
+using Serilog.Extensions.Hosting;
 
 namespace FruitsBasket.IntegrationTests;
 
@@ -30,6 +31,7 @@ public abstract class TestBase : IAsyncLifetime
 
     protected virtual void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<DiagnosticContext>(_ => new DiagnosticContext(null));
     }
 
     public async Task DisposeAsync()
