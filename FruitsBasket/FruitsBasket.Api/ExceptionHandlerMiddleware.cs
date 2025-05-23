@@ -26,11 +26,11 @@ public class ExceptionHandlerMiddleware(RequestDelegate next)
         switch (exception)
         {
             case NotFoundException notFoundException:
-                code = HttpStatusCode.NotFound;
+                code = HttpStatusCode.BadRequest;
                 result = JsonSerializer.Serialize(new { error = notFoundException.Message });
                 break;
             default:
-                code = HttpStatusCode.InternalServerError;
+                code = HttpStatusCode.BadRequest;
                 result = JsonSerializer.Serialize(new { error = exception.Message });
                 break;
         }

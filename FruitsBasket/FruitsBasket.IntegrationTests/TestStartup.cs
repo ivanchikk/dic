@@ -2,6 +2,7 @@ using EntityFrameworkCore.Testing.Common.Helpers;
 using EntityFrameworkCore.Testing.Moq.Helpers;
 using FruitsBasket.Api;
 using FruitsBasket.Data;
+using FruitsBasket.Infrastructure.BlobStorage;
 using Microsoft.EntityFrameworkCore;
 
 namespace FruitsBasket.IntegrationTests;
@@ -12,7 +13,7 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
     {
         var sqlDbContext = ConfigureDb<SqlDbContext>().MockedDbContext;
         var cosmosDbContext = ConfigureDb<CosmosDbContext>().MockedDbContext;
-        
+
         services.AddSingleton(sqlDbContext);
         services.AddSingleton(cosmosDbContext);
     }
@@ -26,5 +27,10 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
         return new MockedDbContextBuilder<T>()
             .UseDbContext(context)
             .UseConstructorWithParameters(options);
+    }
+
+    protected override void ConfigureBlobStorage(IServiceCollection services)
+    {
+        services.AddSingleton<IBlobStorage, BlobStorage>();
     }
 }

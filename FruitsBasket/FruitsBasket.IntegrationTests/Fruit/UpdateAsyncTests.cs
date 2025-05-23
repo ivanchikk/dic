@@ -19,7 +19,6 @@ public class UpdateAsyncTests : TestBaseFruit
             Weight = 10,
             HarvestDate = DateTime.UtcNow,
         };
-
         var expected = new FruitDao
         {
             Id = id,
@@ -28,7 +27,7 @@ public class UpdateAsyncTests : TestBaseFruit
             HarvestDate = DateTime.UtcNow.AddDays(-1),
         };
 
-        SqlDbContext.Fruits.Add(fruit);
+        await SqlDbContext.Fruits.AddAsync(fruit);
         await SqlDbContext.SaveChangesAsync();
         SqlDbContext.Fruits.Entry(fruit).State = EntityState.Detached;
 
@@ -39,6 +38,6 @@ public class UpdateAsyncTests : TestBaseFruit
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var actual = await result.Content.ReadFromJsonAsync<FruitDao>();
-        actual.Should().BeEquivalentTo(expected);
+        actual.Should().BeEquivalentTo(expected, opt => opt.ExcludingMissingMembers());
     }
 }

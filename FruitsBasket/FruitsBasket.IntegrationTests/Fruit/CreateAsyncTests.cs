@@ -1,6 +1,7 @@
 using System.Net;
 using FluentAssertions;
-using FruitsBasket.Data.Fruit;
+using FruitsBasket.Api.Fruit.Contract;
+using FruitsBasket.Model.Fruit;
 
 namespace FruitsBasket.IntegrationTests.Fruit;
 
@@ -10,10 +11,8 @@ public class CreateAsyncTests : TestBaseFruit
     public async Task CreateAsync_CreatesEntity_IfDoesNotExist()
     {
         // Arrange
-        const int id = 1;
-        var expected = new FruitDao
+        var expected = new CreateFruit
         {
-            Id = id,
             Name = "Fruit",
             Weight = 10,
             HarvestDate = DateTime.UtcNow,
@@ -25,7 +24,7 @@ public class CreateAsyncTests : TestBaseFruit
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var actual = await result.Content.ReadFromJsonAsync<FruitDao>();
+        var actual = await result.Content.ReadFromJsonAsync<FruitDto>();
         actual.Should().BeEquivalentTo(expected);
     }
 }
