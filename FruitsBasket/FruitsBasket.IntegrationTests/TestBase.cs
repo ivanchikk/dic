@@ -3,43 +3,39 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace FruitsBasket.IntegrationTests;
 
-public class TestBase : IDisposable
+public abstract class TestBase : IAsyncLifetime
 {
-    private IHostBuilder _server = null!;
-    private IHost _host = null!;
-    protected SqlDbContext SqlDbContext = null!;
-    protected readonly HttpClient HttpClient;
     protected const string API_PATH = "api/v1";
 
-    protected TestBase()
-    {
-        HttpClient = InitTestServer().GetClient();
-    }
+    private IHost _host = null!;
+    private IHostBuilder _server = null!;
+    protected HttpClient HttpClient = null!;
+    protected SqlDbContext SqlDbContext = null!;
 
-    public void Dispose()
-    {
-        _host.StopAsync().GetAwaiter().GetResult();
-        _host.Dispose();
-        SqlDbContext.Dispose();
-    }
-
-    private HttpClient GetClient()
-    {
-        _host = _server.Start();
-
-        SqlDbContext = _host.Services.GetRequiredService<SqlDbContext>();
-        return _host.GetTestClient();
-    }
-
-    private TestBase InitTestServer()
+    public async Task InitializeAsync()
     {
         _server = new HostBuilder()
             .ConfigureWebHost(webHost =>
             {
                 webHost.UseTestServer();
                 webHost.UseStartup<TestStartup>();
+                webHost.ConfigureServices(ConfigureServices);
             });
 
-        return this;
+        _host = await _server.StartAsync();
+        HttpClient = _host.GetTestClient();
+
+        SqlDbContext = _host.Services.GetRequiredService<SqlDbContext>();
+    }
+
+    protected virtual void ConfigureServices(IServiceCollection services)
+    {
+    }
+
+    public async Task DisposeAsync()
+    {
+        await SqlDbContext.DisposeAsync();
+
+        _host.Dispose();
     }
 }

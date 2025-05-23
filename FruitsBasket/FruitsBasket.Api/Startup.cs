@@ -47,6 +47,7 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<IFruitOrchestrator, FruitOrchestrator>();
 
         services.AddAutoMapper(typeof(FruitProfile), typeof(FruitDaoProfile));
+
         ConfigureDb(services);
     }
 
