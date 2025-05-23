@@ -4,7 +4,7 @@ using FruitsBasket.Model.FruitBasket;
 
 namespace FruitsBasket.IntegrationTests.FruitBasket;
 
-public class DeleteAsyncTests : TestBaseFruitBasket
+public class DeleteAsyncTests(BlobStorageFixture blobStorageFixture) : TestBaseFruitBasket(blobStorageFixture)
 {
     [Fact]
     public async Task DeleteAsync_Works()
@@ -22,7 +22,7 @@ public class DeleteAsyncTests : TestBaseFruitBasket
         await ContainerClient.GetBlobClient(filename).UploadAsync(Stream.Null);
 
         // Act
-        var result = await HttpClient.DeleteAsync($"{RESOURCE_PATH}/{basketId}/{fruitId}");
+        var result = await HttpClient.DeleteAsync($"{RESOURCE_PATH}/baskets/{basketId}/fruits/{fruitId}");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

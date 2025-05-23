@@ -6,10 +6,10 @@ namespace FruitsBasket.Api.FruitBasket;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}")]
 public class FruitBasketsController(IFruitBasketOrchestrator orchestrator) : ControllerBase
 {
-    [HttpGet("baskets")]
+    [HttpGet("basketIds")]
     public async Task<IActionResult> GetAllBasketsAsync()
     {
         var result = await orchestrator.GetAllBasketsAsync();
@@ -17,7 +17,7 @@ public class FruitBasketsController(IFruitBasketOrchestrator orchestrator) : Con
         return Ok(result);
     }
 
-    [HttpGet("fruits")]
+    [HttpGet("fruitIds")]
     public async Task<IActionResult> GetAllFruitsAsync()
     {
         var result = await orchestrator.GetAllFruitsAsync();
@@ -25,7 +25,7 @@ public class FruitBasketsController(IFruitBasketOrchestrator orchestrator) : Con
         return Ok(result);
     }
 
-    [HttpGet("{basketId:guid}/fruits")]
+    [HttpGet("baskets/{basketId:guid}/fruits")]
     public async Task<IActionResult> GetAllFruitsByBasketIdAsync(Guid basketId)
     {
         var result = await orchestrator.GetAllFruitsByBasketIdAsync(basketId);
@@ -33,7 +33,7 @@ public class FruitBasketsController(IFruitBasketOrchestrator orchestrator) : Con
         return Ok(result);
     }
 
-    [HttpPost("{basketId:guid}/{fruitId:int}")]
+    [HttpPost("baskets/{basketId:guid}/fruits/{fruitId:int}")]
     public async Task<IActionResult> PostAsync(Guid basketId, int fruitId)
     {
         var result = await orchestrator.CreateAsync(basketId, fruitId);
@@ -41,7 +41,7 @@ public class FruitBasketsController(IFruitBasketOrchestrator orchestrator) : Con
         return Ok(result);
     }
 
-    [HttpDelete("{basketId:guid}/{fruitId:int}")]
+    [HttpDelete("baskets/{basketId:guid}/fruits/{fruitId:int}")]
     public async Task<IActionResult> DeleteAsync(Guid basketId, int fruitId)
     {
         var result = await orchestrator.DeleteAsync(basketId, fruitId);

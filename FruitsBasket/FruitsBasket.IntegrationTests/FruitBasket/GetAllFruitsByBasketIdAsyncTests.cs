@@ -4,7 +4,7 @@ using FruitsBasket.Data.Basket;
 
 namespace FruitsBasket.IntegrationTests.FruitBasket;
 
-public class GetAllFruitsByBasketIdAsyncTests : TestBaseFruitBasket
+public class GetAllFruitsByBasketIdAsyncTests(BlobStorageFixture blobStorageFixture) : TestBaseFruitBasket(blobStorageFixture)
 {
     [Fact]
     public async Task GetAllFruitsByBasketIdAsync_Works()
@@ -30,7 +30,7 @@ public class GetAllFruitsByBasketIdAsyncTests : TestBaseFruitBasket
         }
 
         // Act
-        var result = await HttpClient.GetAsync($"{RESOURCE_PATH}/{basketId}/fruits");
+        var result = await HttpClient.GetAsync($"{RESOURCE_PATH}/baskets/{basketId}/fruits");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -3,7 +3,7 @@ using FluentAssertions;
 
 namespace FruitsBasket.IntegrationTests.FruitBasket;
 
-public class GetAllBasketsAsyncTests : TestBaseFruitBasket
+public class GetAllBasketsAsyncTests(BlobStorageFixture blobStorageFixture) : TestBaseFruitBasket(blobStorageFixture)
 {
     [Fact]
     public async Task GetAllBasketsAsync_Works()
@@ -17,7 +17,7 @@ public class GetAllBasketsAsyncTests : TestBaseFruitBasket
         }
 
         // Act
-        var result = await HttpClient.GetAsync($"{RESOURCE_PATH}/baskets");
+        var result = await HttpClient.GetAsync($"{RESOURCE_PATH}/basketIds");
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

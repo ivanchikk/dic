@@ -31,11 +31,6 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
 
     protected override void ConfigureBlobStorage(IServiceCollection services)
     {
-        var blobConfig = new BlobConfiguration
-        {
-            ConnectionString = "UseDevelopmentStorage=true;",
-            ContainerName = $"test-container-{Guid.NewGuid():N}"
-        };
-        services.AddSingleton(blobConfig);
+        services.AddSingleton<IBlobStorage, BlobStorage>();
     }
 }

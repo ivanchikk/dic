@@ -6,7 +6,7 @@ using FruitsBasket.Model.FruitBasket;
 
 namespace FruitsBasket.IntegrationTests.FruitBasket;
 
-public class CreateAsyncTests : TestBaseFruitBasket
+public class CreateAsyncTests(BlobStorageFixture blobStorageFixture) : TestBaseFruitBasket(blobStorageFixture)
 {
     [Fact]
     public async Task CreateAsync_CreatesEntity_IfDoesNotExist()
@@ -40,7 +40,7 @@ public class CreateAsyncTests : TestBaseFruitBasket
         await CosmosDbContext.SaveChangesAsync();
 
         // Act
-        var result = await HttpClient.PostAsync($"{RESOURCE_PATH}/{basketId}/{fruitId}", null);
+        var result = await HttpClient.PostAsync($"{RESOURCE_PATH}/baskets/{basketId}/fruits/{fruitId}", null);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

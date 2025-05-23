@@ -47,10 +47,10 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<IFruitOrchestrator, FruitOrchestrator>();
         services.AddScoped<IBasketRepository, BasketRepository>();
         services.AddScoped<IBasketOrchestrator, BasketOrchestrator>();
-        services.AddSingleton<IBlobStorage, BlobStorage>();
         services.AddScoped<IFruitBasketOrchestrator, FruitBasketOrchestrator>();
 
         services.AddAutoMapper(typeof(FruitProfile), typeof(FruitDaoProfile));
+
         ConfigureDb(services);
         ConfigureBlobStorage(services);
     }
@@ -85,5 +85,6 @@ public class Startup(IConfiguration configuration)
         var blobConfig = new BlobConfiguration();
         configuration.Bind("AzureBlobStorage", blobConfig);
         services.AddSingleton(blobConfig);
+        services.AddSingleton<IBlobStorage, BlobStorage>();
     }
 }
