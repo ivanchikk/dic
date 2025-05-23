@@ -1,6 +1,7 @@
 using System.Net;
 using FluentAssertions;
 using FruitsBasket.Data.Basket;
+using FruitsBasket.Model.Basket;
 
 namespace FruitsBasket.IntegrationTests.Basket;
 
@@ -19,7 +20,7 @@ public class GetByIdAsyncTests : TestBaseBasket
             LastFruitAdded = DateTime.UtcNow,
         };
 
-        CosmosDbContext.Baskets.Add(expected);
+        await CosmosDbContext.Baskets.AddAsync(expected);
         await CosmosDbContext.SaveChangesAsync();
 
         // Act
@@ -28,7 +29,7 @@ public class GetByIdAsyncTests : TestBaseBasket
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var actual = await result.Content.ReadFromJsonAsync<BasketDao>();
-        actual.Should().BeEquivalentTo(expected);
+        var actual = await result.Content.ReadFromJsonAsync<BasketDto>();
+        actual.Should().BeEquivalentTo(expected, opt => opt.ExcludingMissingMembers());
     }
 }

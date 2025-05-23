@@ -1,6 +1,7 @@
 using System.Net;
 using FluentAssertions;
 using FruitsBasket.Data.Fruit;
+using FruitsBasket.Model.Fruit;
 
 namespace FruitsBasket.IntegrationTests.Fruit;
 
@@ -20,7 +21,7 @@ public class GetAllAsyncTests : TestBaseFruit
                 HarvestDate = DateTime.UtcNow.AddDays(-i),
             }).ToList();
 
-        SqlDbContext.Fruits.AddRange(expected);
+        await SqlDbContext.Fruits.AddRangeAsync(expected);
         await SqlDbContext.SaveChangesAsync();
 
         // Act
@@ -29,8 +30,8 @@ public class GetAllAsyncTests : TestBaseFruit
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var actual = await result.Content.ReadFromJsonAsync<IEnumerable<FruitDao>>();
-        actual.Should().BeEquivalentTo(expected);
+        var actual = await result.Content.ReadFromJsonAsync<IEnumerable<FruitDto>>();
+        actual.Should().BeEquivalentTo(expected, opt => opt.ExcludingMissingMembers());
     }
 
     [Theory]

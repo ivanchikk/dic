@@ -38,6 +38,8 @@ public class FruitOrchestratorTests
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
     }
 
     [Fact]
@@ -46,12 +48,18 @@ public class FruitOrchestratorTests
         // Arrange
         const int id = 1;
 
+        _repositoryMock
+            .Setup(rm => rm.GetByIdAsync(id))
+            .ThrowsAsync(new NotFoundException("Fruit not found"));
+
         // Act
         var act = async () => await _orchestrator.GetByIdAsync(id);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Fruit not found");
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
     }
 
     [Fact]
@@ -67,12 +75,12 @@ public class FruitOrchestratorTests
             .ReturnsAsync(expected);
 
         // Act
-        var actual = await _orchestrator.GetAllAsync(1, 10);
+        var actual = await _orchestrator.GetAllAsync(pageNumber, pageSize);
 
         // Assert
-        _repositoryMock.Verify(rm => rm.GetAllAsync(pageNumber, pageSize), Times.Once);
-
         actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.GetAllAsync(pageNumber, pageSize), Times.Once);
     }
 
     [Fact]
@@ -97,10 +105,42 @@ public class FruitOrchestratorTests
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.CreateAsync(expected), Times.Once);
     }
 
     [Fact]
     public async Task UpdateAsync_Works()
+    {
+        // Arrange
+        const int id = 1;
+        var expected = new FruitDto
+        {
+            Id = id,
+            Name = "Fruit",
+            Weight = 1.1m,
+            HarvestDate = new DateTime(2025, 01, 01),
+        };
+
+        _repositoryMock
+            .Setup(rm => rm.GetByIdAsync(id))
+            .ReturnsAsync(expected);
+        _repositoryMock
+            .Setup(rm => rm.UpdateAsync(expected))
+            .ReturnsAsync(expected);
+
+        // Act
+        var actual = await _orchestrator.UpdateAsync(expected);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
+        _repositoryMock.Verify(rm => rm.UpdateAsync(expected), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ThrowsException_IfNotFound()
     {
         // Arrange
         const int id = 1;
@@ -113,30 +153,18 @@ public class FruitOrchestratorTests
         };
 
         _repositoryMock
-            .Setup(rm => rm.GetByIdAsync(id))
-            .ReturnsAsync(fruit);
-
-        // Act
-        await _orchestrator.UpdateAsync(fruit);
-
-        // Assert
-        _repositoryMock.Verify(rm => rm.UpdateAsync(fruit), Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_ThrowsException_IfNotFound()
-    {
-        // Arrange
-        _repositoryMock
             .Setup(rm => rm.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync(() => null);
 
         // Act
-        var act = async () => await _orchestrator.UpdateAsync(new FruitDto());
+        var act = async () => await _orchestrator.UpdateAsync(fruit);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Fruit not found");
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
+        _repositoryMock.Verify(rm => rm.UpdateAsync(fruit), Times.Never);
     }
 
     [Fact]
@@ -144,15 +172,29 @@ public class FruitOrchestratorTests
     {
         // Arrange
         const int id = 1;
+        var expected = new FruitDto
+        {
+            Id = id,
+            Name = "Fruit",
+            Weight = 1.1m,
+            HarvestDate = new DateTime(2025, 01, 01),
+        };
+
         _repositoryMock
             .Setup(rm => rm.GetByIdAsync(id))
-            .ReturnsAsync(new FruitDto());
+            .ReturnsAsync(expected);
+        _repositoryMock
+            .Setup(rm => rm.DeleteAsync(expected))
+            .ReturnsAsync(expected);
 
         // Act
-        await _orchestrator.DeleteAsync(id);
+        var actual = await _orchestrator.DeleteAsync(id);
 
         // Assert
-        _repositoryMock.Verify(rm => rm.DeleteAsync(It.IsAny<FruitDto>()), Times.Once);
+        actual.Should().BeEquivalentTo(expected);
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
+        _repositoryMock.Verify(rm => rm.DeleteAsync(expected), Times.Once);
     }
 
     [Fact]
@@ -161,11 +203,18 @@ public class FruitOrchestratorTests
         // Arrange
         const int id = 1;
 
+        _repositoryMock
+            .Setup(rm => rm.GetByIdAsync(id))
+            .ReturnsAsync(() => null);
+
         // Act
         var act = async () => await _orchestrator.DeleteAsync(id);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Fruit not found");
+
+        _repositoryMock.Verify(rm => rm.GetByIdAsync(id), Times.Once);
+        _repositoryMock.Verify(rm => rm.DeleteAsync(It.IsAny<FruitDto>()), Times.Never);
     }
 }
