@@ -8,12 +8,12 @@ public abstract class TestBaseFruitBasket(BlobStorageFixture blobStorageFixture)
 {
     protected const string RESOURCE_PATH = API_PATH;
 
-    private readonly BlobConfiguration BlobConfiguration = blobStorageFixture.Configuration;
+    private readonly BlobStorageConfiguration _blobStorageConfiguration = blobStorageFixture.Configuration;
     protected readonly BlobServiceClient ServiceClient = blobStorageFixture.ServiceClient;
     protected readonly BlobContainerClient ContainerClient = blobStorageFixture.ContainerClient;
 
     protected override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton(BlobConfiguration);
+        services.AddSingleton(_blobStorageConfiguration);
     }
 }

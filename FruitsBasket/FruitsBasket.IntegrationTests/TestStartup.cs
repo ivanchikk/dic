@@ -29,7 +29,7 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
             .UseConstructorWithParameters(options);
     }
 
-    protected override void ConfigureBlobStorage(IServiceCollection services)
+    protected override void ConfigureEdgeServices(IServiceCollection services)
     {
         services.AddSingleton<IBlobStorage, BlobStorage>();
     }

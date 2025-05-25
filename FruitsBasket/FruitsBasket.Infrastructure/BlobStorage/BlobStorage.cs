@@ -3,7 +3,7 @@ using FruitsBasket.Model.FruitBasket;
 
 namespace FruitsBasket.Infrastructure.BlobStorage;
 
-public class BlobStorage(BlobConfiguration configuration) : IBlobStorage
+public class BlobStorage(BlobStorageConfiguration configuration) : IBlobStorage
 {
     private readonly BlobContainerClient _containerClient =
         new(configuration.ConnectionString, configuration.ContainerName);

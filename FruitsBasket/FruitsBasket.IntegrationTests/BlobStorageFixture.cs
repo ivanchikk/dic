@@ -17,13 +17,13 @@ public class BlobStorageFixture : IAsyncLifetime
 
     public BlobServiceClient ServiceClient = null!;
     public BlobContainerClient ContainerClient = null!;
-    public BlobConfiguration Configuration { get; private set; } = null!;
+    public BlobStorageConfiguration Configuration { get; private set; } = null!;
 
     public async Task InitializeAsync()
     {
         await AzuriteContainer.StartAsync();
 
-        Configuration = new BlobConfiguration
+        Configuration = new BlobStorageConfiguration
         {
             ConnectionString = AzuriteContainer.GetConnectionString(),
             ContainerName = $"test-container-{Guid.NewGuid():N}",
