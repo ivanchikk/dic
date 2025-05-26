@@ -14,6 +14,7 @@ public abstract class TestBaseFruitBasket(BlobStorageFixture blobStorageFixture)
 
     protected override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IBlobStorage, BlobStorage>();
         services.AddSingleton(_blobStorageConfiguration);
     }
 }
