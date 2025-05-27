@@ -33,6 +33,10 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
     protected override void ConfigureEdgeServices(IServiceCollection services)
     {
         var publisher = new Mock<IPublisher<Guid>>().Object;
+        var subscriber = new Mock<ISubscriber>().Object;
+
         services.AddSingleton(publisher);
+        services.AddSingleton(subscriber);
+        services.AddHostedService<BasketStatsSubscriberHostedService>();
     }
 }
