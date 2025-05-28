@@ -1,4 +1,5 @@
 using FluentAssertions;
+using FruitsBasket.Infrastructure.MessageBroker;
 using FruitsBasket.Model.Basket;
 using FruitsBasket.Orchestrator.Basket;
 using FruitsBasket.Orchestrator.Exceptions;
@@ -10,10 +11,11 @@ public class BasketOrchestratorTests
 {
     private readonly IBasketOrchestrator _orchestrator;
     private readonly Mock<IBasketRepository> _repositoryMock = new();
+    private readonly Mock<IPublisher<Guid>> _publisherMock = new();
 
     public BasketOrchestratorTests()
     {
-        _orchestrator = new BasketOrchestrator(_repositoryMock.Object);
+        _orchestrator = new BasketOrchestrator(_repositoryMock.Object, _publisherMock.Object);
     }
 
     [Fact]
@@ -99,6 +101,9 @@ public class BasketOrchestratorTests
         _repositoryMock
             .Setup(rm => rm.CreateAsync(expected))
             .ReturnsAsync(expected);
+        _publisherMock
+            .Setup(pm => pm.PublishAsync(id))
+            .Returns(Task.CompletedTask);
 
         // Act
         var actual = await _orchestrator.CreateAsync(expected);
@@ -107,6 +112,7 @@ public class BasketOrchestratorTests
         actual.Should().BeEquivalentTo(expected);
 
         _repositoryMock.Verify(rm => rm.CreateAsync(expected), Times.Once);
+        _publisherMock.Verify(pm => pm.PublishAsync(id), Times.Once);
     }
 
     [Fact]

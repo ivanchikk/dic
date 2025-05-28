@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text.Json;
-using FruitsBasket.Orchestrator.Exceptions;
 
 namespace FruitsBasket.Api;
 
@@ -25,10 +24,6 @@ public class ExceptionHandlerMiddleware(RequestDelegate next)
 
         switch (exception)
         {
-            case NotFoundException notFoundException:
-                code = HttpStatusCode.BadRequest;
-                result = JsonSerializer.Serialize(new { error = notFoundException.Message });
-                break;
             default:
                 code = HttpStatusCode.BadRequest;
                 result = JsonSerializer.Serialize(new { error = exception.Message });

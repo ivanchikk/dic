@@ -1,9 +1,10 @@
+using FruitsBasket.Infrastructure.MessageBroker;
 using FruitsBasket.Model.Basket;
 using FruitsBasket.Orchestrator.Exceptions;
 
 namespace FruitsBasket.Orchestrator.Basket;
 
-public class BasketOrchestrator(IBasketRepository repository) : IBasketOrchestrator
+public class BasketOrchestrator(IBasketRepository repository, IPublisher<Guid> publisher) : IBasketOrchestrator
 {
     public async Task<BasketDto> GetByIdAsync(Guid id)
     {
@@ -17,7 +18,11 @@ public class BasketOrchestrator(IBasketRepository repository) : IBasketOrchestra
 
     public async Task<BasketDto> CreateAsync(BasketDto basket)
     {
-        return await repository.CreateAsync(basket);
+        var result = await repository.CreateAsync(basket);
+
+        await publisher.PublishAsync(result.Id);
+
+        return result;
     }
 
     public async Task<BasketDto> UpdateAsync(BasketDto basket)

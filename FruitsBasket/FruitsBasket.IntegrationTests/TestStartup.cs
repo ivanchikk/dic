@@ -2,8 +2,9 @@ using EntityFrameworkCore.Testing.Common.Helpers;
 using EntityFrameworkCore.Testing.Moq.Helpers;
 using FruitsBasket.Api;
 using FruitsBasket.Data;
-using FruitsBasket.Infrastructure.BlobStorage;
+using FruitsBasket.Infrastructure.MessageBroker;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace FruitsBasket.IntegrationTests;
 
@@ -29,8 +30,13 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
             .UseConstructorWithParameters(options);
     }
 
-    protected override void ConfigureBlobStorage(IServiceCollection services)
+    protected override void ConfigureEdgeServices(IServiceCollection services)
     {
-        services.AddSingleton<IBlobStorage, BlobStorage>();
+        var publisher = new Mock<IPublisher<Guid>>().Object;
+        var subscriber = new Mock<ISubscriber>().Object;
+
+        services.AddSingleton(publisher);
+        services.AddSingleton(subscriber);
+        services.AddHostedService<BasketStatsSubscriberHostedService>();
     }
 }

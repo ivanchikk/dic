@@ -1,9 +1,11 @@
 using Asp.Versioning;
+using Azure.Messaging.ServiceBus;
 using FruitsBasket.Api.Fruit;
 using FruitsBasket.Data;
 using FruitsBasket.Data.Basket;
 using FruitsBasket.Data.Fruit;
 using FruitsBasket.Infrastructure.BlobStorage;
+using FruitsBasket.Infrastructure.MessageBroker;
 using FruitsBasket.Model.Basket;
 using FruitsBasket.Model.Fruit;
 using FruitsBasket.Model.FruitBasket;
@@ -52,7 +54,7 @@ public class Startup(IConfiguration configuration)
         services.AddAutoMapper(typeof(FruitProfile), typeof(FruitDaoProfile));
 
         ConfigureDb(services);
-        ConfigureBlobStorage(services);
+        ConfigureEdgeServices(services);
     }
 
     public void Configure(IApplicationBuilder app)
@@ -80,11 +82,18 @@ public class Startup(IConfiguration configuration)
         );
     }
 
-    protected virtual void ConfigureBlobStorage(IServiceCollection services)
+    protected virtual void ConfigureEdgeServices(IServiceCollection services)
     {
-        var blobConfig = new BlobConfiguration();
-        configuration.Bind("AzureBlobStorage", blobConfig);
-        services.AddSingleton(blobConfig);
+        var blobStorageConfig = new BlobStorageConfiguration();
+        configuration.Bind("AzureBlobStorage", blobStorageConfig);
+        services.AddSingleton(blobStorageConfig);
         services.AddSingleton<IBlobStorage, BlobStorage>();
+        
+        services.AddSingleton(new ServiceBusClient(configuration.GetConnectionString("ServiceBusConnection")));
+        services.AddSingleton<IQueueNameProvider, QueueNameProvider>();
+        services.AddSingleton<IStatsStore<Guid>, BasketStatsStore>();
+        services.AddScoped<IPublisher<Guid>, BasketStatsPublisher>();
+        services.AddSingleton<ISubscriber, BasketStatsSubscriber>();
+        services.AddHostedService<BasketStatsSubscriberHostedService>();
     }
 }
