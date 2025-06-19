@@ -7,7 +7,7 @@ public interface IBlobStorage
     Task<List<Guid>> GetAllBasketsAsync();
     Task<List<int>> GetAllFruitsAsync();
     Task<List<int>> GetAllFruitsByBasketIdAsync(Guid basketId);
-    Task CreateFileAsync(string fileName);
-    Task<bool> ContainsFileAsync(string fileName);
-    Task<FruitBasketDto> DeleteFileAsync(string fileName);
+    Task CreateFileAsync(string filename);
+    Task<bool> ContainsFileAsync(string filename);
+    Task<FruitBasketDto> DeleteFileAsync(string filename);
 }

@@ -5,8 +5,8 @@ namespace FruitsBasket.Infrastructure.MessageBroker;
 public class BasketStatsSubscriber(ServiceBusClient client, IStatsStore<Guid> statsStore, IQueueNameProvider provider)
     : ISubscriber
 {
-    private const string QueueKey = "BasketStats";
-    private readonly ServiceBusProcessor _processor = client.CreateProcessor(provider.GetQueueName(QueueKey));
+    private const string QUEUE_KEY = "BasketStats";
+    private readonly ServiceBusProcessor _processor = client.CreateProcessor(provider.GetQueueName(QUEUE_KEY));
 
     public async Task SubscribeAsync()
     {

@@ -39,8 +39,8 @@ public class FruitBasketOrchestrator(
         await fruitOrchestrator.GetByIdAsync(fruitId);
         await basketOrchestrator.GetByIdAsync(basketId);
 
-        var fileName = $"{basketId:N}_{fruitId}";
-        var exists = await fruitBasketStorage.ContainsFileAsync(fileName);
+        var filename = $"{basketId:N}_{fruitId}";
+        var exists = await fruitBasketStorage.ContainsFileAsync(filename);
 
         if (exists)
             throw new InvalidOperationException("This fruit is already in a basket");
@@ -49,7 +49,7 @@ public class FruitBasketOrchestrator(
         if (fruits.Contains(fruitId))
             throw new InvalidOperationException("This fruit is already in another basket");
 
-        await fruitBasketStorage.CreateFileAsync(fileName);
+        await fruitBasketStorage.CreateFileAsync(filename);
 
         return new FruitBasketDto
         {
@@ -60,12 +60,12 @@ public class FruitBasketOrchestrator(
 
     public async Task<FruitBasketDto> DeleteAsync(Guid basketId, int fruitId)
     {
-        var fileName = $"{basketId:N}_{fruitId}";
-        var exists = await fruitBasketStorage.ContainsFileAsync(fileName);
+        var filename = $"{basketId:N}_{fruitId}";
+        var exists = await fruitBasketStorage.ContainsFileAsync(filename);
 
         if (!exists)
             throw new NotFoundException("File not found");
 
-        return await fruitBasketStorage.DeleteFileAsync(fileName);
+        return await fruitBasketStorage.DeleteFileAsync(filename);
     }
 }

@@ -20,7 +20,7 @@ public class StatsTests : TestBaseStats
             .Returns(expected);
 
         // Act
-        var result = await HttpClient.GetAsync($"{RESOURCE_PATH}/baskets");
+        var result = await HttpClient.GetAsync(RESOURCE_PATH);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);

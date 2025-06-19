@@ -1,5 +1,6 @@
 using Azure.Storage.Blobs;
 using FruitsBasket.Infrastructure.BlobStorage;
+using Microsoft.Extensions.Options;
 
 namespace FruitsBasket.IntegrationTests.FruitBasket;
 
@@ -14,7 +15,7 @@ public abstract class TestBaseFruitBasket(BlobStorageFixture blobStorageFixture)
 
     protected override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IOptions<BlobStorageConfiguration>>(_ => Options.Create(_blobStorageConfiguration));
         services.AddSingleton<IBlobStorage, BlobStorage>();
-        services.AddSingleton(_blobStorageConfiguration);
     }
 }

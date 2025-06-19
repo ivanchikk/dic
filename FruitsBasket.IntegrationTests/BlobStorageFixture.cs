@@ -7,7 +7,7 @@ namespace FruitsBasket.IntegrationTests;
 
 public class BlobStorageFixture : IAsyncLifetime
 {
-    private readonly AzuriteContainer AzuriteContainer = new AzuriteBuilder()
+    private readonly AzuriteContainer _azuriteContainer = new AzuriteBuilder()
         .WithImage("mcr.microsoft.com/azure-storage/azurite")
         .WithName($"azurite-test-{Guid.NewGuid():N}")
         .WithPortBinding(10000, true)
@@ -21,11 +21,11 @@ public class BlobStorageFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await AzuriteContainer.StartAsync();
+        await _azuriteContainer.StartAsync();
 
         Configuration = new BlobStorageConfiguration
         {
-            ConnectionString = AzuriteContainer.GetConnectionString(),
+            ConnectionString = _azuriteContainer.GetConnectionString(),
             ContainerName = $"test-container-{Guid.NewGuid():N}",
         };
 
@@ -38,6 +38,6 @@ public class BlobStorageFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await ContainerClient.DeleteIfExistsAsync();
-        await AzuriteContainer.DisposeAsync();
+        await _azuriteContainer.DisposeAsync();
     }
 }

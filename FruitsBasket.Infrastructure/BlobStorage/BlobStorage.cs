@@ -1,12 +1,13 @@
 using Azure.Storage.Blobs;
 using FruitsBasket.Model.FruitBasket;
+using Microsoft.Extensions.Options;
 
 namespace FruitsBasket.Infrastructure.BlobStorage;
 
-public class BlobStorage(BlobStorageConfiguration configuration) : IBlobStorage
+public class BlobStorage(IOptions<BlobStorageConfiguration> options) : IBlobStorage
 {
     private readonly BlobContainerClient _containerClient =
-        new(configuration.ConnectionString, configuration.ContainerName);
+        new(options.Value.ConnectionString, options.Value.ContainerName);
 
     private static (Guid basketId, int fruitId) ParseFilename(string filename)
     {
@@ -53,30 +54,30 @@ public class BlobStorage(BlobStorageConfiguration configuration) : IBlobStorage
         return result;
     }
 
-    public async Task CreateFileAsync(string fileName)
+    public async Task CreateFileAsync(string filename)
     {
         await _containerClient
-            .GetBlobClient(fileName)
+            .GetBlobClient(filename)
             .UploadAsync(Stream.Null);
     }
 
-    public async Task<bool> ContainsFileAsync(string fileName)
+    public async Task<bool> ContainsFileAsync(string filename)
     {
         return await _containerClient
-            .GetBlobClient(fileName)
+            .GetBlobClient(filename)
             .ExistsAsync();
     }
 
-    public async Task<FruitBasketDto> DeleteFileAsync(string fileName)
+    public async Task<FruitBasketDto> DeleteFileAsync(string filename)
     {
         await _containerClient
-            .GetBlobClient(fileName)
+            .GetBlobClient(filename)
             .DeleteAsync();
 
         return new FruitBasketDto
         {
-            BasketId = ParseFilename(fileName).basketId,
-            FruitId = ParseFilename(fileName).fruitId,
+            BasketId = ParseFilename(filename).basketId,
+            FruitId = ParseFilename(filename).fruitId,
         };
     }
 }

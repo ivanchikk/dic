@@ -84,11 +84,9 @@ public class Startup(IConfiguration configuration)
 
     protected virtual void ConfigureEdgeServices(IServiceCollection services)
     {
-        var blobStorageConfig = new BlobStorageConfiguration();
-        configuration.Bind("AzureBlobStorage", blobStorageConfig);
-        services.AddSingleton(blobStorageConfig);
+        services.Configure<BlobStorageConfiguration>(configuration.GetSection("AzureBlobStorage"));
         services.AddSingleton<IBlobStorage, BlobStorage>();
-        
+
         services.AddSingleton(new ServiceBusClient(configuration.GetConnectionString("ServiceBusConnection")));
         services.AddSingleton<IQueueNameProvider, QueueNameProvider>();
         services.AddSingleton<IStatsStore<Guid>, BasketStatsStore>();

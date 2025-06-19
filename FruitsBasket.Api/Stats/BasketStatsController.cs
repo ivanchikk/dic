@@ -6,11 +6,11 @@ namespace FruitsBasket.Api.Stats;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
-public class StatsController(IStatsStore<Guid> statsStore) : ControllerBase
+[Route("api/v{version:apiVersion}/basket-stats")]
+public class BasketStatsController(IStatsStore<Guid> statsStore) : ControllerBase
 {
-    [HttpGet("baskets")]
-    public IActionResult GetAllBasketStats()
+    [HttpGet]
+    public IActionResult GetAllAsync()
     {
         var result = statsStore.GetAll();
 

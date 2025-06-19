@@ -115,7 +115,7 @@ public class FruitBasketOrchestratorTests
         // Arrange
         var basketId = Guid.NewGuid();
         const int fruitId = 1;
-        var fileName = $"{basketId:N}_{fruitId}";
+        var filename = $"{basketId:N}_{fruitId}";
         var expected = new FruitBasketDto
         {
             BasketId = basketId,
@@ -129,7 +129,7 @@ public class FruitBasketOrchestratorTests
             .Setup(bom => bom.GetByIdAsync(basketId))
             .ReturnsAsync(new BasketDto());
         _blobStorageMock
-            .Setup(bsm => bsm.ContainsFileAsync(fileName))
+            .Setup(bsm => bsm.ContainsFileAsync(filename))
             .ReturnsAsync(false);
         _blobStorageMock
             .Setup(bsm => bsm.GetAllFruitsAsync())
@@ -143,9 +143,9 @@ public class FruitBasketOrchestratorTests
 
         _fruitOrchestratorMock.Verify(fom => fom.GetByIdAsync(fruitId), Times.Once);
         _basketOrchestratorMock.Verify(bom => bom.GetByIdAsync(basketId), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(fileName), Times.Once);
+        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(filename), Times.Once);
         _blobStorageMock.Verify(bsm => bsm.GetAllFruitsAsync(), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(fileName), Times.Once);
+        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(filename), Times.Once);
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class FruitBasketOrchestratorTests
         // Arrange
         var basketId = Guid.NewGuid();
         const int fruitId = 1;
-        var fileName = $"{basketId:N}_{fruitId}";
+        var filename = $"{basketId:N}_{fruitId}";
 
         _fruitOrchestratorMock
             .Setup(fom => fom.GetByIdAsync(fruitId))
@@ -168,9 +168,9 @@ public class FruitBasketOrchestratorTests
             .WithMessage("Fruit not found");
 
         _fruitOrchestratorMock.Verify(fom => fom.GetByIdAsync(fruitId), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(fileName), Times.Never);
+        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(filename), Times.Never);
         _blobStorageMock.Verify(bsm => bsm.GetAllFruitsAsync(), Times.Never);
-        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(fileName), Times.Never);
+        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(filename), Times.Never);
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class FruitBasketOrchestratorTests
         // Arrange
         var basketId = Guid.NewGuid();
         const int fruitId = 1;
-        var fileName = $"{basketId:N}_{fruitId}";
+        var filename = $"{basketId:N}_{fruitId}";
 
         _basketOrchestratorMock
             .Setup(bom => bom.GetByIdAsync(basketId))
@@ -193,9 +193,9 @@ public class FruitBasketOrchestratorTests
             .WithMessage("Basket not found");
 
         _basketOrchestratorMock.Verify(bom => bom.GetByIdAsync(basketId), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(fileName), Times.Never);
+        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(filename), Times.Never);
         _blobStorageMock.Verify(bsm => bsm.GetAllFruitsAsync(), Times.Never);
-        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(fileName), Times.Never);
+        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(filename), Times.Never);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class FruitBasketOrchestratorTests
         // Arrange
         var basketId = Guid.NewGuid();
         const int fruitId = 1;
-        var fileName = $"{basketId:N}_{fruitId}";
+        var filename = $"{basketId:N}_{fruitId}";
 
         _fruitOrchestratorMock
             .Setup(fom => fom.GetByIdAsync(fruitId))
@@ -213,7 +213,7 @@ public class FruitBasketOrchestratorTests
             .Setup(bom => bom.GetByIdAsync(basketId))
             .ReturnsAsync(new BasketDto());
         _blobStorageMock
-            .Setup(bsm => bsm.ContainsFileAsync(fileName))
+            .Setup(bsm => bsm.ContainsFileAsync(filename))
             .ReturnsAsync(true);
         _blobStorageMock
             .Setup(bsm => bsm.GetAllFruitsAsync())
@@ -228,8 +228,8 @@ public class FruitBasketOrchestratorTests
 
         _fruitOrchestratorMock.Verify(fom => fom.GetByIdAsync(fruitId), Times.Once);
         _basketOrchestratorMock.Verify(bom => bom.GetByIdAsync(basketId), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(fileName), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(fileName), Times.Never);
+        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(filename), Times.Once);
+        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(filename), Times.Never);
     }
 
     [Fact]
@@ -238,7 +238,7 @@ public class FruitBasketOrchestratorTests
         // Arrange
         var basketId = Guid.NewGuid();
         const int fruitId = 1;
-        var fileName = $"{basketId:N}_{fruitId}";
+        var filename = $"{basketId:N}_{fruitId}";
 
         _fruitOrchestratorMock
             .Setup(fom => fom.GetByIdAsync(fruitId))
@@ -247,7 +247,7 @@ public class FruitBasketOrchestratorTests
             .Setup(bom => bom.GetByIdAsync(basketId))
             .ReturnsAsync(new BasketDto());
         _blobStorageMock
-            .Setup(bsm => bsm.ContainsFileAsync(fileName))
+            .Setup(bsm => bsm.ContainsFileAsync(filename))
             .ReturnsAsync(false);
         _blobStorageMock
             .Setup(bsm => bsm.GetAllFruitsAsync())
@@ -263,7 +263,7 @@ public class FruitBasketOrchestratorTests
         _fruitOrchestratorMock.Verify(fom => fom.GetByIdAsync(fruitId), Times.Once);
         _basketOrchestratorMock.Verify(bom => bom.GetByIdAsync(basketId), Times.Once);
         _blobStorageMock.Verify(bsm => bsm.GetAllFruitsAsync(), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(fileName), Times.Never);
+        _blobStorageMock.Verify(bsm => bsm.CreateFileAsync(filename), Times.Never);
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public class FruitBasketOrchestratorTests
         // Arrange
         var basketId = Guid.NewGuid();
         const int fruitId = 1;
-        var fileName = $"{basketId:N}_{fruitId}";
+        var filename = $"{basketId:N}_{fruitId}";
         var expected = new FruitBasketDto
         {
             BasketId = basketId,
@@ -280,10 +280,10 @@ public class FruitBasketOrchestratorTests
         };
 
         _blobStorageMock
-            .Setup(bsm => bsm.ContainsFileAsync(fileName))
+            .Setup(bsm => bsm.ContainsFileAsync(filename))
             .ReturnsAsync(true);
         _blobStorageMock
-            .Setup(bsm => bsm.DeleteFileAsync(fileName))
+            .Setup(bsm => bsm.DeleteFileAsync(filename))
             .ReturnsAsync(expected);
 
         // Act
@@ -292,8 +292,8 @@ public class FruitBasketOrchestratorTests
         // Assert
         actual.Should().BeEquivalentTo(expected);
 
-        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(fileName), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.DeleteFileAsync(fileName), Times.Once);
+        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(filename), Times.Once);
+        _blobStorageMock.Verify(bsm => bsm.DeleteFileAsync(filename), Times.Once);
     }
 
     [Fact]
@@ -302,10 +302,10 @@ public class FruitBasketOrchestratorTests
         // Arrange
         var basketId = Guid.NewGuid();
         const int fruitId = 1;
-        var fileName = $"{basketId:N}_{fruitId}";
+        var filename = $"{basketId:N}_{fruitId}";
 
         _blobStorageMock
-            .Setup(bsm => bsm.ContainsFileAsync(fileName))
+            .Setup(bsm => bsm.ContainsFileAsync(filename))
             .ReturnsAsync(false);
 
         // Act
@@ -315,7 +315,7 @@ public class FruitBasketOrchestratorTests
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("File not found");
 
-        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(fileName), Times.Once);
-        _blobStorageMock.Verify(bsm => bsm.DeleteFileAsync(fileName), Times.Never);
+        _blobStorageMock.Verify(bsm => bsm.ContainsFileAsync(filename), Times.Once);
+        _blobStorageMock.Verify(bsm => bsm.DeleteFileAsync(filename), Times.Never);
     }
 }

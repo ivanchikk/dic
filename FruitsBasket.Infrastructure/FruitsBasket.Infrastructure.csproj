@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+      <TargetFramework>net9.0</TargetFramework>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,9 +11,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.19.0" />
-      <PackageReference Include="Azure.Storage.Blobs" Version="12.24.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.1" />
+      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
+      <PackageReference Include="Azure.Storage.Blobs" Version="12.24.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.6" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.6" />
     </ItemGroup>
 
 </Project>

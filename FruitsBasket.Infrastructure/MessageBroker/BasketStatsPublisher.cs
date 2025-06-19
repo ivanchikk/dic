@@ -4,8 +4,8 @@ namespace FruitsBasket.Infrastructure.MessageBroker;
 
 public class BasketStatsPublisher(ServiceBusClient client, IQueueNameProvider provider) : IPublisher<Guid>
 {
-    private const string QueueKey = "BasketStats";
-    private readonly ServiceBusSender _sender = client.CreateSender(provider.GetQueueName(QueueKey));
+    private const string QUEUE_KEY = "BasketStats";
+    private readonly ServiceBusSender _sender = client.CreateSender(provider.GetQueueName(QUEUE_KEY));
 
     public async Task PublishAsync(Guid id)
     {

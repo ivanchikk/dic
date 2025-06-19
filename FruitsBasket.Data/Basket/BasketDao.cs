@@ -7,6 +7,7 @@ public class BasketDao : ISoftDeletable
 {
     [Key]
     public Guid Id { get; set; }
+    [MaxLength(32)]
     public string Name { get; set; } = null!;
     public decimal FruitsWeight { get; set; }
     public DateTime LastFruitAdded { get; set; }

@@ -5,7 +5,7 @@ namespace FruitsBasket.IntegrationTests.Stats;
 
 public class TestBaseStats : TestBase
 {
-    protected const string RESOURCE_PATH = API_PATH + "/stats";
+    protected const string RESOURCE_PATH = API_PATH + "/basket-stats";
 
     protected readonly Mock<IStatsStore<Guid>> StoreMock = new();
 
