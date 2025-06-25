@@ -11,6 +11,7 @@ COPY ["FruitsBasket.Api/FruitsBasket.Api.csproj", "FruitsBasket.Api/"]
 COPY ["FruitsBasket.Data/FruitsBasket.Data.csproj", "FruitsBasket.Data/"]
 COPY ["FruitsBasket.Model/FruitsBasket.Model.csproj", "FruitsBasket.Model/"]
 COPY ["FruitsBasket.Orchestrator/FruitsBasket.Orchestrator.csproj", "FruitsBasket.Orchestrator/"]
+COPY ["FruitsBasket.Infrastructure/FruitsBasket.Infrastructure.csproj", "FruitsBasket.Infrastructure/"]
 RUN dotnet restore "FruitsBasket.Api/FruitsBasket.Api.csproj"
 COPY . .
 WORKDIR "/src/FruitsBasket.Api"
