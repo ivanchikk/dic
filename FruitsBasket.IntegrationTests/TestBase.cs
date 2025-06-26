@@ -11,7 +11,6 @@ public abstract class TestBase : IAsyncLifetime
     private IHostBuilder _server = null!;
     protected HttpClient HttpClient = null!;
     protected SqlDbContext SqlDbContext = null!;
-    protected CosmosDbContext CosmosDbContext = null!;
 
     public async Task InitializeAsync()
     {
@@ -27,7 +26,6 @@ public abstract class TestBase : IAsyncLifetime
         HttpClient = _host.GetTestClient();
 
         SqlDbContext = _host.Services.GetRequiredService<SqlDbContext>();
-        CosmosDbContext = _host.Services.GetRequiredService<CosmosDbContext>();
     }
 
     protected virtual void ConfigureServices(IServiceCollection services)
@@ -37,7 +35,6 @@ public abstract class TestBase : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await SqlDbContext.DisposeAsync();
-        await CosmosDbContext.DisposeAsync();
 
         _host.Dispose();
     }

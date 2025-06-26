@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FruitsBasket.Infrastructure\FruitsBasket.Infrastructure.csproj" />
       <ProjectReference Include="..\FruitsBasket.Model\FruitsBasket.Model.csproj" />
     </ItemGroup>
 

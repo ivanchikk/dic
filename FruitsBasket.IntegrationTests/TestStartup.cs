@@ -2,9 +2,7 @@ using EntityFrameworkCore.Testing.Common.Helpers;
 using EntityFrameworkCore.Testing.Moq.Helpers;
 using FruitsBasket.Api;
 using FruitsBasket.Data;
-using FruitsBasket.Infrastructure.MessageBroker;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 namespace FruitsBasket.IntegrationTests;
 
@@ -13,10 +11,8 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
     protected override void ConfigureDb(IServiceCollection services)
     {
         var sqlDbContext = ConfigureDb<SqlDbContext>().MockedDbContext;
-        var cosmosDbContext = ConfigureDb<CosmosDbContext>().MockedDbContext;
 
         services.AddSingleton(sqlDbContext);
-        services.AddSingleton(cosmosDbContext);
     }
 
     private static IMockedDbContextBuilder<T> ConfigureDb<T>() where T : DbContext
@@ -28,15 +24,5 @@ public class TestStartup(IConfiguration configuration) : Startup(configuration)
         return new MockedDbContextBuilder<T>()
             .UseDbContext(context)
             .UseConstructorWithParameters(options);
-    }
-
-    protected override void ConfigureEdgeServices(IServiceCollection services)
-    {
-        var publisher = new Mock<IPublisher<Guid>>().Object;
-        var subscriber = new Mock<ISubscriber>().Object;
-
-        services.AddSingleton(publisher);
-        services.AddSingleton(subscriber);
-        services.AddHostedService<BasketStatsSubscriberHostedService>();
     }
 }
