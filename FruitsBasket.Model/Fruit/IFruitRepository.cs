@@ -7,4 +7,5 @@ public interface IFruitRepository
     Task<FruitDto> CreateAsync(FruitDto fruit);
     Task<FruitDto> UpdateAsync(FruitDto fruit);
     Task<FruitDto> DeleteAsync(FruitDto fruit);
+    Task<int> CountAsync();
 }

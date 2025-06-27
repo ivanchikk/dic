@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FruitsBasket.Data\FruitsBasket.Data.csproj" />
+      <ProjectReference Include="..\FruitsBasket.Infrastructure\FruitsBasket.Infrastructure.csproj" />
       <ProjectReference Include="..\FruitsBasket.Model\FruitsBasket.Model.csproj" />
       <ProjectReference Include="..\FruitsBasket.Orchestrator\FruitsBasket.Orchestrator.csproj" />
     </ItemGroup>

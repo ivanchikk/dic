@@ -2,9 +2,11 @@ using Asp.Versioning;
 using FruitsBasket.Api.Fruit;
 using FruitsBasket.Data;
 using FruitsBasket.Data.Fruit;
+using FruitsBasket.Infrastructure.Metrics;
 using FruitsBasket.Model.Fruit;
 using FruitsBasket.Orchestrator.Fruit;
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
 using Serilog;
 
 namespace FruitsBasket.Api;
@@ -37,6 +39,8 @@ public class Startup(IConfiguration configuration)
         });
         services.AddSwaggerGen();
 
+        services.AddHostedService<FruitMetricsUpdater>();
+
         services.AddSingleton<SoftDeleteInterceptor>();
         services.AddScoped<IFruitRepository, FruitRepository>();
         services.AddScoped<IFruitOrchestrator, FruitOrchestrator>();
@@ -55,7 +59,11 @@ public class Startup(IConfiguration configuration)
         app.UseSerilogRequestLogging();
 
         app.UseRouting();
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapMetrics();
+        });
     }
 
     protected virtual void ConfigureDb(IServiceCollection services)

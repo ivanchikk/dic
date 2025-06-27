@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
 using AutoMapper;
 using FruitsBasket.Api.Fruit.Contract;
+using FruitsBasket.Infrastructure.Metrics;
 using FruitsBasket.Model.Fruit;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,6 +41,8 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
     {
         var result = await orchestrator.CreateAsync(mapper.Map<FruitDto>(fruit));
 
+        FruitMetrics.ActiveFruitsTotal.Inc();
+
         logger.LogInformation(nameof(PostAsync) + ": success!");
 
         return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
@@ -62,6 +65,8 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
     public async Task<IActionResult> DeleteAsync(int id)
     {
         var result = await orchestrator.DeleteAsync(id);
+
+        FruitMetrics.ActiveFruitsTotal.Dec();
 
         logger.LogInformation(nameof(DeleteAsync) + ": success!");
 
