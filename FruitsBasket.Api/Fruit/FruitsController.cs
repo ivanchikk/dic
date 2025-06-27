@@ -10,12 +10,15 @@ namespace FruitsBasket.Api.Fruit;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper) : ControllerBase
+public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, ILogger<FruitsController> logger)
+    : ControllerBase
 {
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetByIdAsync(int id)
     {
         var result = await orchestrator.GetByIdAsync(id);
+
+        logger.LogInformation(nameof(GetByIdAsync) + ": success!");
 
         return Ok(result);
     }
@@ -27,6 +30,8 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper) :
     {
         var result = await orchestrator.GetAllAsync(pageNumber, pageSize);
 
+        logger.LogInformation(nameof(GetAllAsync) + ": success!");
+
         return Ok(result);
     }
 
@@ -34,6 +39,8 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper) :
     public async Task<IActionResult> PostAsync(CreateFruit fruit)
     {
         var result = await orchestrator.CreateAsync(mapper.Map<FruitDto>(fruit));
+
+        logger.LogInformation(nameof(PostAsync) + ": success!");
 
         return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
     }
@@ -46,6 +53,8 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper) :
 
         var result = await orchestrator.UpdateAsync(entity);
 
+        logger.LogInformation(nameof(PutAsync) + ": success!");
+
         return Ok(result);
     }
 
@@ -53,6 +62,8 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper) :
     public async Task<IActionResult> DeleteAsync(int id)
     {
         var result = await orchestrator.DeleteAsync(id);
+
+        logger.LogInformation(nameof(DeleteAsync) + ": success!");
 
         return Ok(result);
     }
