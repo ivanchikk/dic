@@ -10,25 +10,34 @@ using RabbitMQ.Client.Events;
 
 namespace FruitsBasket.Infrastructure.RabbitMQ;
 
-public class FruitEventConsumer : BackgroundService, IAsyncDisposable
+public class FruitEventConsumer(
+    IOptions<RabbitMqConfiguration> configuration,
+    IServiceScopeFactory serviceScopeFactory,
+    ILogger<FruitEventConsumer> logger)
+    : BackgroundService, IAsyncDisposable
 {
-    private readonly IConnection _connection;
-    private readonly IChannel _channel;
-    private readonly RabbitMqConfiguration _configuration;
-    private IEmailService _emailService = null!;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly ILogger<FruitEventConsumer> _logger;
+    private IConnection? _connection;
+    private IChannel? _channel;
+    private string? _queueName;
+    private readonly RabbitMqConfiguration _configuration = configuration.Value;
 
-    public FruitEventConsumer(
-        IOptions<RabbitMqConfiguration> configuration,
-        IServiceScopeFactory serviceScopeFactory,
-        ILogger<FruitEventConsumer> logger
-    )
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        _configuration = configuration.Value;
-        _serviceScopeFactory = serviceScopeFactory;
-        _logger = logger;
+        try
+        {
+            await InitializeRabbitMqConnectionAsync();
+            await SetupExchangeAndQueueAsync(cancellationToken);
+            await StartConsumingAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to initialize RabbitMQ consumer");
+            throw;
+        }
+    }
 
+    private async Task InitializeRabbitMqConnectionAsync()
+    {
         var factory = new ConnectionFactory
         {
             HostName = _configuration.HostName,
@@ -36,20 +45,15 @@ public class FruitEventConsumer : BackgroundService, IAsyncDisposable
             Password = _configuration.Password,
         };
 
-        try
-        {
-            _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
-            _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed to create RabbitMQ connection");
-            throw;
-        }
+        _connection = await factory.CreateConnectionAsync();
+        _channel = await _connection.CreateChannelAsync();
     }
 
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    private async Task SetupExchangeAndQueueAsync(CancellationToken cancellationToken)
     {
+        if (_channel == null)
+            throw new InvalidOperationException("Channel is not initialized");
+
         await _channel.ExchangeDeclareAsync(
             exchange: "fruits.events",
             type: ExchangeType.Topic,
@@ -64,93 +68,120 @@ public class FruitEventConsumer : BackgroundService, IAsyncDisposable
             autoDelete: true,
             cancellationToken: cancellationToken);
 
+        _queueName = queueResult.QueueName;
+
         await _channel.QueueBindAsync(
             queue: queueResult.QueueName,
             exchange: "fruits.events",
             routingKey: "fruit.*",
             cancellationToken: cancellationToken);
+    }
+
+    private async Task StartConsumingAsync(CancellationToken cancellationToken)
+    {
+        if (_channel == null)
+            throw new InvalidOperationException("Channel is not initialized");
+        if (string.IsNullOrEmpty(_queueName))
+            throw new InvalidOperationException("Queue name is not initialized");
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
-
-        consumer.ReceivedAsync += async (_, eventArgs) =>
-        {
-            try
-            {
-                var body = eventArgs.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                var routingKey = eventArgs.RoutingKey;
-
-                _logger.LogInformation("Received event: {RoutingKey} - {Message}", routingKey, message);
-
-                using var scope = _serviceScopeFactory.CreateScope();
-                _emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
-
-                await (routingKey switch
-                {
-                    "fruit.created" => HandleFruitCreatedAsync(message),
-                    "fruit.updated" => HandleFruitUpdatedAsync(message),
-                    "fruit.deleted" => HandleFruitDeletedAsync(message),
-                    _ => HandleUnknownRoutingKeyAsync(routingKey)
-                });
-
-                await _channel.BasicAckAsync(eventArgs.DeliveryTag, false, cancellationToken);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error processing message");
-                await _channel.BasicNackAsync(eventArgs.DeliveryTag, false, true, cancellationToken);
-            }
-        };
+        consumer.ReceivedAsync += OnMessageReceivedAsync;
 
         await _channel.BasicConsumeAsync(
-            queue: queueResult.QueueName,
+            queue: _queueName,
             autoAck: false,
             consumer: consumer,
             cancellationToken: cancellationToken);
 
+        await WaitForCancellationAsync(cancellationToken);
+    }
+
+    private async Task OnMessageReceivedAsync(object sender, BasicDeliverEventArgs eventArgs)
+    {
+        try
+        {
+            var body = eventArgs.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+            var routingKey = eventArgs.RoutingKey;
+
+            logger.LogInformation("Received event: {RoutingKey} - {Message}", routingKey, message);
+
+            await ProcessMessageAsync(message, routingKey);
+            await _channel!.BasicAckAsync(eventArgs.DeliveryTag, false, CancellationToken.None);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error processing message");
+            await _channel!.BasicNackAsync(eventArgs.DeliveryTag, false, true, CancellationToken.None);
+        }
+    }
+
+    private async Task ProcessMessageAsync(string message, string routingKey)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+
+        await (routingKey switch
+        {
+            "fruit.created" => HandleFruitCreatedAsync(message, emailService),
+            "fruit.updated" => HandleFruitUpdatedAsync(message, emailService),
+            "fruit.deleted" => HandleFruitDeletedAsync(message, emailService),
+            _ => HandleUnknownRoutingKeyAsync(routingKey)
+        });
+    }
+
+    private static async Task WaitForCancellationAsync(CancellationToken cancellationToken)
+    {
         var tcs = new TaskCompletionSource();
         await using var registration = cancellationToken.Register(() => tcs.SetResult());
         await tcs.Task;
     }
 
-    private async Task HandleFruitCreatedAsync(string message)
+    private async Task HandleFruitCreatedAsync(string message, IEmailService emailService)
     {
         var fruitEvent = JsonSerializer.Deserialize<FruitEvent>(message)!;
 
-        _logger.LogInformation("Processing fruit created: {FruitEventName}", fruitEvent.fruit.Name);
+        logger.LogInformation("Processing fruit created: {FruitEventName}", fruitEvent.fruit.Name);
 
-        await _emailService.SendFruitNotificationAsync(fruitEvent.fruit, "Created");
+        await emailService.SendFruitNotificationAsync(fruitEvent.fruit, "Created");
     }
 
-    private async Task HandleFruitUpdatedAsync(string message)
+    private async Task HandleFruitUpdatedAsync(string message, IEmailService emailService)
     {
         var fruitEvent = JsonSerializer.Deserialize<FruitEvent>(message)!;
 
-        _logger.LogInformation("Processing fruit updated: {FruitEventName}", fruitEvent.fruit.Name);
+        logger.LogInformation("Processing fruit updated: {FruitEventName}", fruitEvent.fruit.Name);
 
-        await _emailService.SendFruitNotificationAsync(fruitEvent.fruit, "Updated");
+        await emailService.SendFruitNotificationAsync(fruitEvent.fruit, "Updated");
     }
 
-    private async Task HandleFruitDeletedAsync(string message)
+    private async Task HandleFruitDeletedAsync(string message, IEmailService emailService)
     {
         var fruitEvent = JsonSerializer.Deserialize<FruitEvent>(message)!;
 
-        _logger.LogInformation("Processing fruit deleted: {FruitEventName} ({FruitEventId})", fruitEvent.fruit.Name,
+        logger.LogInformation("Processing fruit deleted: {FruitEventName} ({FruitEventId})", fruitEvent.fruit.Name,
             fruitEvent.fruit.Id);
 
-        await _emailService.SendFruitNotificationAsync(fruitEvent.fruit, "Deleted");
+        await emailService.SendFruitNotificationAsync(fruitEvent.fruit, "Deleted");
     }
 
     private async Task HandleUnknownRoutingKeyAsync(string routingKey)
     {
-        _logger.LogWarning("Unknown routing key: {RoutingKey}", routingKey);
+        logger.LogWarning("Unknown routing key: {RoutingKey}", routingKey);
 
         await Task.CompletedTask;
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _channel.CloseAsync();
-        await _connection.CloseAsync();
+        if (_channel != null)
+        {
+            await _channel.CloseAsync();
+        }
+
+        if (_connection != null)
+        {
+            await _connection.CloseAsync();
+        }
     }
 }
