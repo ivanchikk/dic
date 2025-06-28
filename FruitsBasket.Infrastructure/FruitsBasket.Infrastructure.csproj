@@ -16,6 +16,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.6" />
       <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.6" />
       <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
+      <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
     </ItemGroup>
 
 </Project>

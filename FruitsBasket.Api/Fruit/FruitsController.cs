@@ -3,6 +3,7 @@ using Asp.Versioning;
 using AutoMapper;
 using FruitsBasket.Api.Fruit.Contract;
 using FruitsBasket.Infrastructure.Metrics;
+using FruitsBasket.Infrastructure.RabbitMQ;
 using FruitsBasket.Model.Fruit;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,15 @@ namespace FruitsBasket.Api.Fruit;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, ILogger<FruitsController> logger)
+public class FruitsController(
+    IFruitOrchestrator orchestrator,
+    IMapper mapper,
+    ILogger<FruitsController> logger,
+    IMessageProducer producer)
     : ControllerBase
 {
+    private const string ExchangeName = "fruits.events";
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetByIdAsync(int id)
     {
@@ -43,6 +50,9 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
 
         FruitMetrics.ActiveFruitsTotal.Inc();
 
+        var fruitCreatedEvent = new FruitEvent(result, DateTime.UtcNow);
+        await producer.PublishAsync(ExchangeName, "fruit.created", fruitCreatedEvent);
+
         logger.LogInformation(nameof(PostAsync) + ": success!");
 
         return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
@@ -56,6 +66,9 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
 
         var result = await orchestrator.UpdateAsync(entity);
 
+        var fruitUpdatedEvent = new FruitEvent(result, DateTime.UtcNow);
+        await producer.PublishAsync(ExchangeName, "fruit.updated", fruitUpdatedEvent);
+
         logger.LogInformation(nameof(PutAsync) + ": success!");
 
         return Ok(result);
@@ -67,6 +80,9 @@ public class FruitsController(IFruitOrchestrator orchestrator, IMapper mapper, I
         var result = await orchestrator.DeleteAsync(id);
 
         FruitMetrics.ActiveFruitsTotal.Dec();
+
+        var fruitDeletedEvent = new FruitEvent(result, DateTime.UtcNow);
+        await producer.PublishAsync(ExchangeName, "fruit.deleted", fruitDeletedEvent);
 
         logger.LogInformation(nameof(DeleteAsync) + ": success!");
 

@@ -2,7 +2,9 @@ using Asp.Versioning;
 using FruitsBasket.Api.Fruit;
 using FruitsBasket.Data;
 using FruitsBasket.Data.Fruit;
+using FruitsBasket.Infrastructure.Email;
 using FruitsBasket.Infrastructure.Metrics;
+using FruitsBasket.Infrastructure.RabbitMQ;
 using FruitsBasket.Model.Fruit;
 using FruitsBasket.Orchestrator.Fruit;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +50,8 @@ public class Startup(IConfiguration configuration)
         services.AddAutoMapper(typeof(FruitProfile), typeof(FruitDaoProfile));
 
         ConfigureDb(services);
+        ConfigureRabbitMQ(services);
+        ConfigureEmail(services);
     }
 
     public void Configure(IApplicationBuilder app)
@@ -73,5 +77,18 @@ public class Startup(IConfiguration configuration)
                 .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
                 .AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>())
         );
+    }
+
+    protected virtual void ConfigureRabbitMQ(IServiceCollection services)
+    {
+        services.Configure<RabbitMqConfiguration>(configuration.GetSection("RabbitMQ"));
+        services.AddSingleton<IMessageProducer, RabbitMqProducer>();
+        services.AddHostedService<FruitEventConsumer>();
+    }
+
+    protected virtual void ConfigureEmail(IServiceCollection services)
+    {
+        services.Configure<EmailConfiguration>(configuration.GetSection("Email"));
+        services.AddScoped<IEmailService, EmailService>();
     }
 }

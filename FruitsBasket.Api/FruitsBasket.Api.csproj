@@ -4,7 +4,8 @@
       <TargetFramework>net9.0</TargetFramework>
       <ImplicitUsings>enable</ImplicitUsings>
       <Nullable>enable</Nullable>
-    </PropertyGroup>
+      <UserSecretsId>9534dd44-a43f-4c50-b285-c2ec5bfaa5f7</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
